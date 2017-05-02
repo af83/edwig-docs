@@ -161,13 +161,18 @@ Un partner est constitué de:
 
 Les paramètres peuvent être en particulier: 
 
+* remote_objectid_kind
 * remote_url
 * remote_credential
-* remote_maxRequestRate
-* remote_maxConcurrentRequest
 * local_credential
-* local_maxRequestRate
-* local_maxConcurrentRequest
+
+**remote_objectid_kind:** sert à différencier le type (kind) d'objectids utilisés/renvoyés par le partenaire. Un remote objectIdKind ne doit pas contenir d'espace ni de ':'.
+
+**remote_url:** adresse du server externe utilisée par exemple pour faire des requête SIRI.
+
+**remote_credential:** identification pour le serveur externe (utilisé en ReauestorRef par exemple en SIRI).
+
+**local_credential:** identifiant qui sera utilisé par le serveur externe pour réaliser des requêtes vers Edwig (pour que l'on reconnaisse la provenance d'une demande).
 
 La liste des Partners est indépendante pour chaque Referential.
 
@@ -338,10 +343,24 @@ Un Connector peut induire des contraintes de validation dans le Partner (setting
 
 Connectors existants:
 
-* OperationnalStatus
-* SIRICheckStatusRequestClient
-* Collector
-* SIRIStopMonitoringRequestCollector (demander à un Partner l’état des prochaines StopVisits d’un StopArea)
+* Siri-check-status-client
+* Siri-check-status-server
+* Siri-stop-monitoring-request-collector
+* Siri-stop-monitoring-request-broadcaster
+* Siri-service-request-broadcaster
+* Siri-stop-points-discovery-request-broadcaster
+
+**siri-check-status-client:** Sert à émettre des requêtes de CheckStatus via un Guardian (envoi de requêtes automatique toutes les 30 secondes). Nécessite *remote_url* pour l'adresse du serveur et *remote_credentials* pour s'identifier.
+
+**siri-check-status-server:** Sert à répondre aux requêtes de CheckStatus. Nécessite *local_credential* pour identifier les requêtes.
+
+**siri-stop-monitoring-request-collector** Sert à émettre des requêtes de StopMonitoring via un Guardian (envoi de requêtes automatiquement si un StopArea n'a pas été mis à jour depuis une minute ou plus). Nécessite *remote_objectid_kind* pour savoir ce que le partenaire utilise comme type d'objectid, *remote_url* pour l'adresse du serveur, et *remote_credential* pour s'identifier.
+
+**siri-stop-monitoring-request-broadcaster:** Sert à répondre aux requêtes de StopMonitoring. Nécessite *remote_objectid_kind* pour savoir ce que le partenaire utilise comme type d'objectid et *local_credential* pour identifier les requêtes.
+
+**siri-service-request-broadcaster:** Sert à répondre aux requêtes de GetSiriService. Nécessite *remote_objectid_kind* pour savoir ce que le partenaire utilise comme type d'objectid et *local_credential* pour identifier les requêtes.
+
+**siri-stop-points-discovery-request-broadcaster:** Sert à répondre aux requêtes de StopPointDiscovery. Nécessite *remote_objectid_kind* pour savoir ce que le partenaire utilise comme type d'objectid et *local_credential* pour identifier les requestes.
 
 
 
@@ -395,17 +414,23 @@ La Line doit:
 POST /:referential_slug/lines
 
 {
-  "Name": "Ligne 3 Metro",
-  "ObjectIds": {
-    "Reflex": "1234"
+  "Attributes": {
+    "JourneyNote": "abcd"
   },
-  "Attributes" : {
-    "JourneyNote":"abcd"
+  "Name": "Line01",
+  "ObjectIDs": {
+    "hastus": "1234"
   },
   "References": {
-    "JourneyPattern":{"ObjectId":{"1234":"5678"}, "Id":"42"}
+    "JourneyPattern": {
+      "ObjectId": {
+        "1234": "5678"
+      },
+      "Id": "42"
+    }
   }
 }
+
 
 ##Consulter les Lines disponibles
 
@@ -418,15 +443,24 @@ POST /:referential_slug/lines
   -H "Authorization: <Clé API>" <<EOF
 
   {
-    "Id": "95d8379f-68d5-4426-8a1b-fa49a9bd14a2",
-    "Name": "Line01",
-    "ObjectIDs": [
-      {
-        "Kind": "Skybus",
-        "Value": "1234"
+    "Attributes": {
+      "JourneyNote": "abcd"
+    },
+   "Id": "95d8379f-68d5-4426-8a1b-fa49a9bd14a2",
+   "Name": "Line01",
+   "ObjectIDs": {
+      "hastus": "1234"
+    },
+   "References": {
+      "JourneyPattern": {
+        "ObjectId": {
+          "1234": "5678"
+        },
+        "Id": "42"
       }
-    ],
+    }
   }
+
 
   EOF
 ```
@@ -443,26 +477,32 @@ GET /:referential_slug/lines/:uuid
 
   [
     {
-      "Id": "95d8379f-68d5-4426-8a1b-fa49a9bd14a2",
-      "Name": "Line01",
-      "ObjectIDs": [
-        {
-          "Kind": "Skybus",
-          "Value": "1234"
+      "Attributes": {
+        "JourneyNote": "abcd"
+      },
+     "Id": "95d8379f-68d5-4426-8a1b-fa49a9bd14a2",
+     "Name": "Line01",
+     "ObjectIDs": {
+        "hastus": "1234"
+      },
+     "References": {
+        "JourneyPattern": {
+          "ObjectId": {
+            "1234": "5678"
+          },
+          "Id": "42"
         }
-      ],
+      }
     },
     {
       "Id": "80e2379f-095e-4006-8a1b-fa49a9bd14a2",
       "Name": "Line02",
-      "ObjectIDs": [
-        {
-          "Kind": "Reflex",
-          "Value": "2345"
-        }
-      ],
+      "ObjectIDs": {
+        "hastus": "5678"
+      }
     }
   ]
+
 
   EOF
 ```
@@ -484,9 +524,20 @@ A la modification, la Line est validée. Les règles sont les mêmes qu’à la 
 PUT /:referential_slug/lines/:uuid
 
 {
-  “Name”: “Ligne 3 Metro”,
-  "ObjectIds": {
-    "Reflex": "2345"
+  "Attributes": {
+    "JourneyNote": "abcd"
+  },
+  "Name": "Line01",
+  "ObjectIDs": {
+    "hastus": "1234"
+  },
+  "References": {
+    "JourneyPattern": {
+      "ObjectId": {
+        "1234": "5678"
+      },
+      "Id": "42"
+    }
   }
 }
 
@@ -543,15 +594,24 @@ Le StopArea doit :
 POST /:referential_slug/stop_areas
 
 {
-  "Name": "test",
-  "ObjectIds": {
-    "Reflex": "1234"
+  "Attributes": {
+    "JourneyNote": "abcd"
   },
-  "Attributes" : {
-    "JourneyNote":"abcd"
-  },
-  "References" : {
-    "JourneyPattern":{"ObjectId":{"1234":"5678"}, "Id":"42"}
+  "CollectedAlways": true,
+  "Name": "TestStopArea",
+  "ObjectIDs": [
+    {
+      "Kind": "Skybus",
+      "Value": "boaarle"
+    }
+  ],
+  "References": {
+    "JourneyPattern": {
+      "ObjectId": {
+        "1234": "5678"
+      },
+      "Id": "42"
+    }
   }
 }
 
@@ -566,20 +626,30 @@ POST /:referential_slug/stop_areas
   curl -d @- "<URL>"
   -H "Authorization: <Clé API>" <<EOF
 
-  [
-    {
-      "Id": "65585332-ca56-4c0b-9992-1946ca77d196",
-      "Name": "TestStopArea",
-      "ObjectIDs": [
-        {
-          "Kind": "Skybus",
-          "Value": "boaarle"
-        }
-      ],
-      "UpdatedAt": "2016-12-22T12:27:36.623814602+01:00",
-      "RequestedAt": "2016-12-22T12:27:36.623814602+01:00"
-    }
-  ]
+  {
+    "Attributes": {
+      "JourneyNote": "abcd"
+    },
+    "CollectedAlways": true,
+    "Id": "65585332-ca56-4c0b-9992-1946ca77d196",
+    "Name": "TestStopArea",
+    "ObjectIDs": [
+      {
+        "Kind": "Skybus",
+        "Value": "boaarle"
+      }
+    ],
+    "UpdatedAt": "2016-12-22T12:27:36.623814602+01:00",
+    "References": {
+      "JourneyPattern": {
+        "ObjectId": {
+          "1234": "5678"
+        },
+        "Id": "42"
+      }
+    },
+    "RequestedAt": "2016-12-22T12:27:36.623814602+01:00"
+  }
 
   EOF
 ```
@@ -597,6 +667,10 @@ GET /:referential_slug/stop_areas/
 
   [
     {
+      "Attributes": {
+        "JourneyNote": "abcd"
+      },
+      "CollectedAlways": true,
       "Id": "65585332-ca56-4c0b-9992-1946ca77d196",
       "Name": "TestStopArea",
       "ObjectIDs": [
@@ -606,9 +680,19 @@ GET /:referential_slug/stop_areas/
         }
       ],
       "UpdatedAt": "2016-12-22T12:27:36.623814602+01:00",
+      "References": {
+        "JourneyPattern": {
+          "ObjectId": {
+            "1234": "5678"
+          },
+          "Id": "42"
+        }
+      },
       "RequestedAt": "2016-12-22T12:27:36.623814602+01:00"
     },
     {
+      "CollectedAlways": false,
+      "CollectedUntil": "2016-12-22T12:47:36.623814602+01:00",,
       "Id": "65585332-ca56-4c0b-9992-1946ca77d196",
       "Name": "StopArea",
       "ObjectIDs": [
@@ -621,6 +705,7 @@ GET /:referential_slug/stop_areas/
       "RequestedAt": "2016-12-22T12:27:36.623814602+01:00"
     } 
   ]
+
 
   EOF
 ```
@@ -643,9 +728,24 @@ A la modification, le StopArea est validé. Les règles sont les mêmes qu’à 
 PUT /:referential_slug/stop_areas/:uuid
 
 {
-  "Name": "test",
-  "ObjectIds": {
-    "Reflex": "1234"
+  "Attributes": {
+    "JourneyNote": "abcd"
+  },
+  "CollectedAlways": true,
+  "Name": "TestStopArea",
+  "ObjectIDs": [
+    {
+      "Kind": "Skybus",
+      "Value": "boaarle"
+    }
+  ],
+  "References": {
+    "JourneyPattern": {
+      "ObjectId": {
+        "1234": "5678"
+      },
+      "Id": "42"
+    }
   }
 }
 
@@ -699,25 +799,43 @@ Un StopVisit est constitué de:
   -H "Authorization: <Clé API>" <<EOF
 
   {
-    "ArrivalStatus": "onTime",
-    "DepartureStatus": "onTime",
-    "Id": "b47c65d5-bcef-4dfa-a847-41baba3beab1",
-    "ObjectIDs": { "reflex": "FR:77491:ZDE:34004:STIF" }
-    "PassageOrder": 44,
-    "Schedules" : [
-       {
-          "Kind":"aimed",
-          "ArrivalTime":"2017-01-01T13:00:00.000Z",
-          "DepartureTime":"2017-01-01T13:02:00.000Z”
+    "ArrivalStatus": "noReport",
+    "Attributes": {
+      "DepartureBoardingActivity": "boarding"
+    },
+    "Collected": true,
+    "CollectedAt": "2017-04-24T14:48:01.15117002+02:00",
+    "DepartureStatus": "noReport",
+    "Id": "86f9154d-df94-42ce-8cab-ee89b6537b9a",
+    "ObjectIDs": {
+      "_default": "118f9488fa15b1589a8ce1bb45a3d9607f1b05e4",
+      "ninoxe": "NINOXE:VehicleJourney:305-NINOXE:StopPoint:SP:24:LOC-4"
+    },
+    "PassageOrder": 5,
+    "RecordedAt": "2017-04-24T03:50:09+02:00",
+    "References": {
+      "OperatorRef": {
+        "ObjectId": {
+          "ninoxe": "NINOXE:Company:15563880:LOC"
+        },
+        "Id": "1234"
+      }
+    },
+    "Schedules": [
+      {
+        "ArrivalTime": "2017-04-24T17:36:00+02:00",
+        "DepartureTime": "2017-04-24T17:38:00+02:00",
+        "Kind": "aimed"
       },
-     {
-          "Kind":"expected",
-          "ArrivalTime":"2017-01-01T13:00:00.000Z",
-          "DepartureTime":"2017-01-01T13:02:00.000Z”
+      {
+        "ArrivalTime": "2017-04-24T17:36:00+02:00",
+        "DepartureTime": "2017-04-24T17:38:00+02:00",
+        "Kind": "expected"
       }
     ],
-    "StopArea": "65585332-ca56-4c0b-9992-1946ca77d196",
-    "VehicleJourney": "75624f6f-89e9-4a27-8c4e-68d8f044d6cf"
+    "StopAreaId": "50b8525b-be97-424f-89f3-ecb3e47cc666",
+    "VehicleAtStop": false,
+    "VehicleJourneyId": "05e8b2e4-27fc-47ca-b3c1-0236b5e89ab8"
   }
 
   EOF
@@ -736,68 +854,85 @@ GET /:referential_slug/stop_visits/:uuid
 
   [
     {
-      "ArrivalStatus": "onTime",
-      "DepartureStatus": "onTime",
-      "Id": "b47c65d5-bcef-4dfa-a847-41baba3beab1",
-      "ObjectIds": {
-        "Reflex": "1234"
+      "ArrivalStatus": "noReport",
+      "Attributes": {
+        "DepartureBoardingActivity": "boarding"
       },
-      "PassageOrder": 44,
-      "Attributes" : {
-        "JourneyNote":"abcd"
-      }
-      "References" : {
-        "JourneyPattern":{"ObjectId":{"1234":"5678"}, "Id":"42"}
-      }
+      "Collected": true,
+      "CollectedAt": "2017-04-24T14:48:01.15117002+02:00",
+      "DepartureStatus": "noReport",
+      "Id": "86f9154d-df94-42ce-8cab-ee89b6537b9a",
+      "ObjectIDs": {
+        "_default": "118f9488fa15b1589a8ce1bb45a3d9607f1b05e4",
+        "ninoxe": "NINOXE:VehicleJourney:305-NINOXE:StopPoint:SP:24:LOC-4"
+      },
+      "PassageOrder": 5,
+      "RecordedAt": "2017-04-24T03:50:09+02:00",
+      "References": {
+        "OperatorRef": {
+          "ObjectId": {
+            "ninoxe": "NINOXE:Company:15563880:LOC"
+          },
+          "Id": ""
+        }
+      },
       "Schedules": [
         {
-          "ArrivalTime": "2016-12-22T12:45:29+01:00",
-          "DepartureTime": "2016-12-22T12:45:29+01:00",
-          "Kind": "expected"
-        },
-        {
-          "ArrivalTime": "0001-01-01T00:00:00Z",
-          "DepartureTime": "0001-01-01T00:00:00Z",
-          "Kind": "actual"
-        },
-        {
-          "ArrivalTime": "2016-12-22T12:43:05+01:00",
-          "DepartureTime": "2016-12-22T12:43:05+01:00",
+          "ArrivalTime": "2017-04-24T17:36:00+02:00",
+          "DepartureTime": "2017-04-24T17:38:00+02:00",
           "Kind": "aimed"
+        },
+        {
+          "ArrivalTime": "2017-04-24T17:36:00+02:00",
+          "DepartureTime": "2017-04-24T17:38:00+02:00",
+          "Kind": "expected"
         }
       ],
-      "StopArea": "65585332-ca56-4c0b-9992-1946ca77d196",
-      "VehicleJourney": "75624f6f-89e9-4a27-8c4e-68d8f044d6cf"
+      "StopAreaId": "50b8525b-be97-424f-89f3-ecb3e47cc666",
+      "VehicleAtStop": false,
+      "VehicleJourneyId": "05e8b2e4-27fc-47ca-b3c1-0236b5e89ab8"
     },
     {
-      "ArrivalStatus": "onTime",
-      "DepartureStatus": "onTime",
-      "Id": "ed2f2906-5c64-4211-9eda-c2ec68375b19",
-      "ObjectIds": {
-        "Reflex": "1234"
+      "ArrivalStatus": "noReport",
+      "Attributes": {
+        "DepartureBoardingActivity": "boarding"
       },
-      "PassageOrder": 44,
+      "Collected": true,
+      "CollectedAt": "2017-04-24T14:48:01.151202921+02:00",
+      "DepartureStatus": "noReport",
+      "Id": "d1bc5f20-2d26-4293-86d9-cf7e3280c795",
+      "ObjectIDs": {
+        "_default": "cd9ac5e84d448bb6b6e7b3ac15c6d6e36c16af3a",
+        "ninoxe": "NINOXE:VehicleJourney:259-NINOXE:StopPoint:SP:24:LOC-3"
+      },
+      "PassageOrder": 4,
+      "RecordedAt": "2017-04-24T03:50:09+02:00",
+      "References": {
+        "OperatorRef": {
+          "ObjectId": {
+            "ninoxe": "NINOXE:Company:15563880:LOC"
+          },
+          "Id": ""
+        }
+      },
       "Schedules": [
         {
-          "ArrivalTime": "2016-12-22T17:44:38+01:00",
-          "DepartureTime": "2016-12-22T17:44:38+01:00",
-          "Kind": "aimed"
-        },
-        {
-          "ArrivalTime": "2016-12-22T17:44:38+01:00",
-          "DepartureTime": "2016-12-22T17:44:38+01:00",
+          "ArrivalTime": "2017-04-24T18:06:00+02:00",
+          "DepartureTime": "2017-04-24T18:06:00+02:00",
           "Kind": "expected"
         },
         {
-          "ArrivalTime": "0001-01-01T00:00:00Z",
-          "DepartureTime": "0001-01-01T00:00:00Z",
-          "Kind": "actual"
+          "ArrivalTime": "2017-04-24T18:06:00+02:00",
+          "DepartureTime": "2017-04-24T18:06:00+02:00",
+          "Kind": "aimed"
         }
       ],
-      "StopArea": "65585332-ca56-4c0b-9992-1946ca77d196",
-      "VehicleJourney": "a80e1cd3-204f-4aff-bdaa-793d690ae3a8"
+      "StopAreaId": "ea6dc70b-9dbc-4a96-8133-79ef3c0c183f",
+      "VehicleAtStop": false,
+      "VehicleJourneyId": "4d3c136e-0a8a-406a-b247-279cfc7760f0"
     }
   ]
+
 
   EOF
 ```
@@ -982,17 +1117,39 @@ Un VehicleJourney est constitué de :
   -H "Authorization: <Clé API>" <<EOF
 
   {
-    "Id": "217d22f9-7e5a-43b8-ba31-9992a9e77153",
-    "ObjectIds": {
-      "Reflex": "1234"
+    "Attributes": {
+      "DestinationAimedArrivalTime": "2017-04-24T15:44:00.000+02:00",
+      "DestinationName": "Cimetière des Sauvages",
+      "DirectionName": "Mago-Cime OMNI",
+      "DirectionRef": "Left",
+      "Monitored": "false",
+      "OriginAimedDepartureTime": "2017-04-24T15:30:00.000+02:00",
+      "OriginName": "Magicien Noir",
+      "ProductCategoryRef": "0"
     },
-    "Line": "65585332-ca56-4c0b-9992-1946ca77d196",
-    "Attributes" : {
-        "JourneyNote":"abcd"
+    "Id": "18a04e0d-47bc-4c66-80e4-5d7a1c67071e",
+    "LineId": "13d022ce-85e8-454e-885a-ab7b5791723e",
+    "ObjectIDs": {
+      "_default": "fc4a4d87c8151a2a58b1f6c74a092effa96c885d",
+      "ninoxe": "NINOXE:VehicleJourney:224"
     },
-    "References" : {
-      "JourneyPattern":{"ObjectId":{"1234":"5678"}, "Id":"42"}
-    }
+    "References": {
+      "DestinationRef": {
+        "ObjectId": {
+          "ninoxe": "NINOXE:StopPoint:SP:62:LOC"
+        },
+        "Id": "1234"
+      },
+      "JourneyPatternRef": {
+        "ObjectId": {
+          "ninoxe": "NINOXE:JourneyPattern:3_42_62:LOC"
+        },
+        "Id": "5678"
+      }
+    },
+    "StopVisits": [
+      "01ffe523-d6c8-45da-a153-250e45cc2cca"
+    ]
   }
 
   EOF
@@ -1010,20 +1167,77 @@ GET /:referential_slug/vehicle_journeys/:uuid
 
   [
     {
-      "Id": "6fafa63f-83a3-491d-bb9b-6873991d9c1f",
-      "ObjectIds": {
-        "Reflex": "1234"
+      "Attributes": {
+        "DestinationAimedArrivalTime": "2017-04-24T15:44:00.000+02:00",
+        "DestinationName": "aaaa",
+        "DirectionName": "bbbb",
+        "DirectionRef": "Left",
+        "Monitored": "false",
+        "OriginAimedDepartureTime": "2017-04-24T15:30:00.000+02:00",
+        "OriginName": "cccc",
+        "ProductCategoryRef": "0"
       },
-      "Line": "65585332-ca56-4c0b-9992-1946ca77d196",
+      "Id": "18a04e0d-47bc-4c66-80e4-5d7a1c67071e",
+      "LineId": "13d022ce-85e8-454e-885a-ab7b5791723e",
+      "ObjectIDs": {
+        "_default": "fc4a4d87c8151a2a58b1f6c74a092effa96c885d",
+        "ninoxe": "NINOXE:VehicleJourney:224"
+      },
+      "References": {
+        "DestinationRef": {
+          "ObjectId": {
+            "ninoxe": "NINOXE:StopPoint:SP:62:LOC"
+          },
+          "Id": "1234"
+        },
+        "JourneyPatternRef": {
+          "ObjectId": {
+            "ninoxe": "NINOXE:JourneyPattern:3_42_62:LOC"
+          },
+          "Id": "5678"
+        }
+      },
+      "StopVisits": [
+        "01ffe523-d6c8-45da-a153-250e45cc2cca"
+      ]
     },
     {
-      "Id": "217d22f9-7e5a-43b8-ba31-9992a9e77153",
-      "ObjectIds": {
-        "Reflex": "1234"
+      "Attributes": {
+        "DestinationAimedArrivalTime": "2017-04-24T16:14:00.000+02:00",
+        "DestinationName": "eeee",
+        "DirectionName": "ffff",
+        "DirectionRef": "Left",
+        "Monitored": "false",
+        "OriginAimedDepartureTime": "2017-04-24T16:00:00.000+02:00",
+        "OriginName": "gggg",
+        "ProductCategoryRef": "0"
       },
-      "Line": "65585332-ca56-4c0b-9992-1946ca77d196",
+      "Id": "51c19567-58dc-4f29-bd0c-46964f4aa47e",
+      "LineId": "13d022ce-85e8-454e-885a-ab7b5791723e",
+      "ObjectIDs": {
+        "_default": "4c3c35e4551fbb1866c8b7fd39e2748700ae9915",
+        "ninoxe": "NINOXE:VehicleJourney:262"
+      },
+      "References": {
+        "DestinationRef": {
+          "ObjectId": {
+            "ninoxe": "NINOXE:StopPoint:SP:62:LOC"
+          },
+          "Id": "9876"
+        },
+        "JourneyPatternRef": {
+          "ObjectId": {
+            "ninoxe": "NINOXE:JourneyPattern:3_42_62:LOC"
+          },
+          "Id": "5432"
+        }
+      },
+      "StopVisits": [
+        "4f869d69-4959-4e63-939d-37851d6466a2"
+      ]
     }
   ]
+
 
   EOF
 ```
@@ -1145,9 +1359,6 @@ Les informations complètes du message d’origine (StopVisitUpdateAttributes) s
 * StopVisitAttributes#LineName : PublishedLineName
 * StopVisitAttributes#StopPointName : StopPointName
 
-----------------------------------------------------------------------------------------------------
-**PHASE 2**
-
 ##Envoyer une requête SIRI 
 Chaque référentiel dispose d’un point d’entrée permettant de traiter des requêtes SIRI.
 
@@ -1175,13 +1386,241 @@ Dans la requête StopMonitoring, les identifiants sont interprétés selon le re
 
 Si le remote_objectid_kind est “reflex”, et MonitoringRef est “FR:77491:ZDE:34004:STIF”, l’arrêt associé à la requête devra avoir l’objectid “reflex”:”FR:77491:ZDE:34004:STIF”.
 
-La réponse à la requête doit être conforme à la norme SIRI.
+La réponse à la requête doit être conforme à la norme SIRI et au profil SIRI IDF 2.4
 
-Le contenu de la réponse est rempli en utilisant les attributs suivants:
+Le contenu des MonitoredStopVisits de la réponse est rempli en utilisant les attributs du Model de la manière suivante:
 
-| path XML | attribut du modèle |
 
-**TODO: copier/coller les données depuis le tableau de mapping**
+<table>
+  <tr>
+    <td>RecordedAtTime</td>
+    <td>StopVisit#RecordedAt</td>
+  </tr>
+  <tr>
+    <td>ItemIdentifier</td>    
+    <td>StopVisit#ObjectID</td>
+  </tr>
+  <tr>
+    <td>MonitoringRef</td>
+    <td>StopArea#ObjectID</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/LineRef</td>
+    <td>Line#ObjectID</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/DirectionRef</td>   
+    <td>VehicleJourney#Attribute[DirectionRef]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/FramedVehicleJourneyRef/DataFrameRef</td>    
+    <td>Model#Date</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/FramedVehicleJourneyRef/DatedVehicleJourneyRef</td>   
+    <td>VehicleJourney#ObjectID</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/JourneyPatternRef</td>   
+    <td>VehicleJourney#Reference[JourneyPattern]#ObjectID</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/JourneyPatternName</td>    
+    <td>VehicleJourney#Attribute[JourneyPatternName]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/VehicleMode</td>   
+    <td>VehicleJourney#Attribute[VehicleMode]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/PublishedLineName</td>   
+    <td>Line#Name</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/RouteRef</td>    
+    <td>VehicleJourney#Reference[RouteRef]#ObjectID</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/DirectionName</td>   
+    <td>VehicleJourney#Attribute[DirectionName]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/OperatorRef</td>   
+    <td>VehicleJourney#Reference[OperatorRef]#ObjectID</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/ProductCategoryRef</td>    
+    <td>VehicleJourney#Attribute[ProductCategory]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/ServiceFeatureRef</td>   
+    <td>VehicleJourney#Attribute[ServiceFeature]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/VehicleFeatureRef</td>   
+    <td>VehicleJourney#Attribute[VehicleFeature]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/OriginRef</td>
+    <td>VehicleJourney#Reference[Origin]#ObjectID</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/OriginName</td>    
+    <td>VehicleJourney#Attribute[OriginName]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/Via/PlaceName</td>   
+    <td>VehicleJourney#Attribute[ViaPlaceName]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/Via/PlaceRef</td>    
+    <td>VehicleJourney#Reference[ViaPlace]#ObjectID</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/DestinationRef</td>    
+    <td>VehicleJourney#Reference[Destination]#ObjectID</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/DestinationName</td>   
+    <td>VehicleJourney#Attribute[DirectionName]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/VehicleJourneyName</td>    
+    <td>VehicleJourney#Name</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/JourneyNote</td>
+    <td>VehicleJourney#Attribute[JourneyNote]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/HeadwayService</td>
+    <td>VehicleJourney#Attribute[HeadwayService]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/OriginAimedDepartureTime</td>    
+    <td>VehicleJourney#Attribute[OriginAimedDepartureTime]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/OriginAimedDestinationTime</td>    
+    <td>VehicleJourney#Attribute[OriginAimedDestinationTime]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/FirstOrLastJourney</td>    
+    <td>VehicleJourney#Attribute[FirstOrLastJourney]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/Monitored</td>   
+    <td>VehicleJourney#Attribute[Monitored]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoringError</td>   
+    <td>VehicleJourney#Attribute[MonitoringError]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/Occupancy</td>   
+    <td>VehicleJourney#Attribute[Occupancy]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/Delay</td>   
+    <td>VehicleJourney#Attribute[Delay]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/TrainNumber/TrainNumberRef</td>    
+    <td>VehicleJourney#Attribute[TrainNumbers]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/SituationRef</td>    
+    <td>VehicleJourney#Attribute[SituationRef]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/StopPointRef</td>    
+    <td>StopArea#ObjectID</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/Order</td>   
+    <td>StopVisit#PassageOrder</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/VehicleAtStop</td>   
+    <td>StopVisit#VehicleAtStop</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/PlatformTraversal</td>
+    <td>StopVisit#Attribute[PlatformTraversal]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/DestinationDisplay</td>
+    <td>StopVisit#Attribute[DestinationDisplay]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/AimedArrivalTime</td>    
+    <td>StopVisit#Schedule[aimed]#Arrival</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/ActualArrivalTime</td>   
+    <td>StopVisit#Schedule[actual]#Arrival</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/ExpectedArrivalTime</td>   
+    <td>StopVisit#Schedule[expected]#Arrival</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/ArrivalStatus</td>   
+    <td>StopVisit#ArrivalStatus</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/ArrivalProximyTest</td>    
+    <td>StopVisit#Attribute[ArrivalProximyTest]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/ArrivalPlatformName</td>   
+    <td>StopVisit#Attribute[ArrivalPlatformName]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/ArrivalStopAssignment/AimedQuayName</td>   
+    <td>StopVisit#Attribute[ActualQuayName]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/AimedDepartureTime</td>    
+    <td>StopVisit#Schedule[aimed]#Departure</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/ActualDepartureTime</td>   
+    <td>StopVisit#Schedule[actual]#Departure</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/ExpectedDepartureTime</td>   
+    <td>StopVisit#Schedule[expected]#Departure</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/DepartureStatus</td>   
+    <td>StopVisit#DepartureStatus</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/DeparturePlatformName</td>   
+    <td>StopVisit#Attribute[DeparturePlatformName]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/DepartureBoardingActivity</td>   
+    <td>StopVisit#Attribute[DepartureBoardingActivity]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/AimedHeadwayInterval</td>    
+    <td>StopVisit#Attribute[AimedHeadwayInterval]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/ExpectedHeadwayInterval</td>   
+    <td>StopVisit#Attribute[ExpectedHeadwayInterval]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/DistanceFromStop</td>    
+    <td>StopVisit#Attribute[DistanceFromStop]</td>
+  </tr>
+  <tr>
+    <td>MonitoredVehicleJourney/MonitoredCall/NumberOfStopsAway</td>   
+    <td>StopVisit#Attribute[NumberOfStopsAway]</td>
+  </tr>
+</table>
 
 ##Envoyer une requête SIRI GetSiriService
 
@@ -1213,13 +1652,21 @@ Exemple de setting :
 
 La réponse au StopDiscovery utilise les identifiants correspondant au remote_objectid_kind configuré pour le Connector SIRIStopPointDiscoveryRequestBroadcaster. Les arrêts ne disposant pas d’un objectid de ce type sont naturellement filtrés.
 
-La réponse doit être conforme à la norme SIRI.
+La réponse doit être conforme à la norme SIRI et au profil SIRI IDF 2.4.
 
-Le contenu de la réponse est rempli en utilisant les attributs suivants:
+Le contenu des AnnotatedStopPointRef de la réponse est rempli en utilisant les attributs du Model de la manière suivante :
 
-| path XML | attribut du modèle |
+<table>
+  <tr>
+    <td>StopPointRef</td>
+    <td>StopArea#ObjectID</td>
+  </tr>
+  <tr>
+    <td>StopName</td>
+    <td>StopArea#Name</td>
+  </tr>
+</table>
 
-**TODO: remplir**
 
 ##Configurer un Partner pour ne gérer en collecte qu’une liste donnée d’arrêts
 
@@ -1229,32 +1676,49 @@ Exemple : collect_include_stopareas = “boaarle,trahote”
 
 Cette liste d’identifiants est associée au remote_objectid_kind du même Partner. 
 
-Cette liste est pris en compte par le CollectManager pour sélectionner (ou non) le Partner.
+Cette liste est pris en compte par le CollectManager pour sélectionner (ou non) le Partner. En l’absence du setting, le Partner peut être utilisé pour alimenter n’importe quel StopArea.
+
+##Configurer un Partner pour choisir sa priorité dans la collecte
+
+Dans un Partner, on peut définir un setting collect.priority contenant un entier (supérieur ou égal à 0).
+
+Exemple : collect.priority = “1”
+
+Cette priorité est prise en compte par le CollectManager pour sélectionner le Partner. Un Partner avec un priorité plus basse est utilisé en priorité. En l’absence du setting, le Partner a la priorité la plus basse (0).
+
 
 ##Paramétrer un arrêt pour qu’il soit monitoré temporairement
 
-Les attributs StopArea#monitored_always et StopArea#monitored_until permettent de contrôler le monitoring temporaire ou non d’un arrêt.
+Les attributs StopArea#CollectedAlways et StopArea#CollectedUntil permettent de contrôler la collecte temporaire ou non d’un arrêt.
 
-Un arrêt avec StopArea#monitored_always à vrai sera toujours pris en compte par le mécanisme de mise à jour de ses données.
+Un arrêt avec StopArea#CollectedAlways à vrai sera toujours pris en compte par le mécanisme de collecte.
 
-Un arrêt avec StopArea#monitored_always à faux ne sera pris en compte par le mécanisme de mise à jour de ses données que si monitored_until est défini et dans le futur.
+Un arrêt avec StopArea#CollectedAlways à faux ne sera pris en compte par le mécanisme de collecte que si CollectedUntil est défini et dans le futur.
 
-Lorsqu’une requête de StopMonitoring est reçue sur un arrêt, son attribut monitored_until est repositionné dans le futur (+10 minutes par exemple).
+Lorsqu’une requête de StopMonitoring est reçue sur un arrêt, son attribut CollectedUntil est repositionné dans le futur (+15 minutes). La collecte est assurée pendant toute cette période.
 
-Ce qui signifie qu’un arrêt non monitoré par défaut, le sera temporairement tant que ses informations sont consultées via des requêtes s de StopMonitorings.
+Ce qui signifie qu’un arrêt non monitoré par défaut, le sera temporairement tant que ses informations sont consultées via des requêtes de StopMonitorings.
 
-Exemples:
+Exemples :
 
-Arrêt “RATP Dev” : objectid hastus, monitored_always = true / monitored_until = 0
+Arrêt “RATP Dev”: 
 
-Arrêt “STIF” : objectid reflex, monitored_always = false / monitored_until = 0 initialement. Quand on recoit une requete de StopMonitoring, monitored_until  = now + 10 minutes
+* ObjectIDs hastus et stif
+* CollectedAlways: true 
+* CollectedUntil: non défini
 
-##Configurer pour un Partner le format des identifiants de message SIRI
+Arrêt “STIF”:
 
-**TODO identifier les autres endroits**
+* ObjectIDs stif
+* CollectedAlways: false 
+* CollectedUntil non défini initialement. 
 
-Identifiés pour l’instant:
+Quand on reçoit une requête de StopMonitoring, CollectedUntil  passe à +15 minutes.
 
-Le ResponseMessageIdentifier doit respecter le format imposé par le profil SIRI STIF 2.4.
+##Recharger automatiquement le Model d'un Referential à l'heure prévue
 
-siri_responsemessageidentifier_format = “%{partner_slug}:ResponseMessage::%{uuid}:LOC”
+A l'heure configurée (04:00 par défaut), un Referential doit lancer la procédure de rechargement de son Model. Le Model change de date de référence et prend la date du jour.
+
+Le setting "model.reload_at" du Referential permet de modifier cette heure (par exemple "03:15").
+
+Pour l'instant, en l'absence de donnée en base, le rechargement d'un Model consiste à effacer tous les StopVisits, les Lines et les VehicleJourneys.
