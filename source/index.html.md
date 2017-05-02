@@ -88,34 +88,52 @@ Je peux consulter les informations concernant un ou tous les Referentials d’Ed
 
 **Consultation d’un referential :** 
 
-GET /_referentials/:uuid
+>Consultation d'un referential:
 
-{
-  "Id": "6ba7b814-9dad-11d1-0000-00c04fd430c8",
-  "Partners": [      
-    "e035bff4-6712-4589-821c-df599237b5ff"      
-  ],      
-  "Slug": "referential"      
-}
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
+
+  {
+    "Id": "6ba7b814-9dad-11d1-0000-00c04fd430c8",
+    "Partners": [      
+      "e035bff4-6712-4589-821c-df599237b5ff"      
+    ],      
+    "Slug": "referential"      
+  }
+
+  EOF
+```
+
+GET /_referentials/:uuid
 
 **Consultation de tous les referentials:**  
 
-GET /_referentials 
+>Consultation de tout les referentials:
 
-[    
-  {      
-    "Id": "6ba7b814-9dad-11d1-0000-00c04fd430c8",      
-    "Partners": [       
-      "e035bff4-6712-4589-821c-df599237b5ff"      
-    ],         
-    "Slug": "referential"      
-  },       
-  {     
-    "Id": "13c5a17e-9aa3-1001-015e-02c04fd430c8",       
-    "Partners": [],      
-    "Slug": "referential2"      
-  }      
-]  
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
+
+  [    
+    {      
+      "Id": "6ba7b814-9dad-11d1-0000-00c04fd430c8",      
+      "Partners": [       
+        "e035bff4-6712-4589-821c-df599237b5ff"      
+      ],         
+      "Slug": "referential"      
+    },       
+    {     
+      "Id": "13c5a17e-9aa3-1001-015e-02c04fd430c8",       
+      "Partners": [],      
+      "Slug": "referential2"      
+    }      
+  ]  
+
+  EOF
+```
+
+GET /_referentials 
 
 
 
@@ -197,27 +215,12 @@ Je peux consulter les informations concernant un ou tous les Referentials d’Ed
 
 **Consultation d’un Partner:** 
 
-GET /:referential_slug/partners/:uuid
+>Consultation d'un partner:
 
-{
-  "Id": "5d6d607c-d33b-4062-adc1-58691937b7d0",
-  "Slug": "ratpdev_partner",
-  "Settings": {
-    "remote_credential": "RATPDEV:Concerto",
-    "remote_objectid_kind": "Skybus",
-    "remote_url": "test.url/siri/SiriServices"
-  },
-  "ConnectorTypes": [
-    "siri-check-status-client",
-  ],
-  "OperationnalStatus": "up"
-}
- 
-**Consultation de l’ensemble des Partners:** 
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
 
-GET /:referential_slug/partners
-
-[
   {
     "Id": "5d6d607c-d33b-4062-adc1-58691937b7d0",
     "Slug": "ratpdev_partner",
@@ -230,22 +233,55 @@ GET /:referential_slug/partners
       "siri-check-status-client",
     ],
     "OperationnalStatus": "up"
-  },
-  {
-    "Id": "5a6c689c-d33b-4028-avc1-56870937b7d0",
-    "Slug": "ratpdev_partner2",
-    "Settings": {
-      "remote_credential": "RATPDEV:Concerto",
-      "remote_objectid_kind": "Reflex",
-      "remote_url": "second.test.url/siri"
-    },
-    "ConnectorTypes": [
-      "siri-check-status-client",
-      "siri-stop-monitoring-request-collector"
-    ],
-    "OperationnalStatus": "up"
   }
-]
+
+  EOF
+```
+
+GET /:referential_slug/partners/:uuid
+ 
+**Consultation de l’ensemble des Partners:** 
+
+>Consultation de l'ensemble des Partners:
+
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
+
+  [
+    {
+      "Id": "5d6d607c-d33b-4062-adc1-58691937b7d0",
+      "Slug": "ratpdev_partner",
+      "Settings": {
+        "remote_credential": "RATPDEV:Concerto",
+        "remote_objectid_kind": "Skybus",
+        "remote_url": "test.url/siri/SiriServices"
+      },
+      "ConnectorTypes": [
+        "siri-check-status-client",
+      ],
+      "OperationnalStatus": "up"
+    },
+    {
+      "Id": "5a6c689c-d33b-4028-avc1-56870937b7d0",
+      "Slug": "ratpdev_partner2",
+      "Settings": {
+        "remote_credential": "RATPDEV:Concerto",
+        "remote_objectid_kind": "Reflex",
+        "remote_url": "second.test.url/siri"
+      },
+      "ConnectorTypes": [
+        "siri-check-status-client",
+        "siri-stop-monitoring-request-collector"
+      ],
+      "OperationnalStatus": "up"
+    }
+  ]
+
+  EOF
+```
+
+GET /:referential_slug/partners
 
 ##Modifier un Partner
 
@@ -375,24 +411,12 @@ POST /:referential_slug/lines
 
 **Consulter une ligne:**
 
-GET /:referential_slug/lines/:uuid
- 
-{
-  "Id": "95d8379f-68d5-4426-8a1b-fa49a9bd14a2",
-  "Name": "Line01",
-  "ObjectIDs": [
-    {
-      "Kind": "Skybus",
-      "Value": "1234"
-    }
-  ],
-}
+>Consulter une ligne:
 
-**Consulter l’ensemble des lignes:** 
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
 
-GET /:referential_slug/lines
-
-[
   {
     "Id": "95d8379f-68d5-4426-8a1b-fa49a9bd14a2",
     "Name": "Line01",
@@ -402,18 +426,48 @@ GET /:referential_slug/lines
         "Value": "1234"
       }
     ],
-  },
-  {
-    "Id": "80e2379f-095e-4006-8a1b-fa49a9bd14a2",
-    "Name": "Line02",
-    "ObjectIDs": [
-      {
-        "Kind": "Reflex",
-        "Value": "2345"
-      }
-    ],
   }
-]
+
+  EOF
+```
+
+GET /:referential_slug/lines/:uuid
+
+**Consulter l’ensemble des lignes:** 
+
+>Consulter l'ensemble des lignes:
+
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
+
+  [
+    {
+      "Id": "95d8379f-68d5-4426-8a1b-fa49a9bd14a2",
+      "Name": "Line01",
+      "ObjectIDs": [
+        {
+          "Kind": "Skybus",
+          "Value": "1234"
+        }
+      ],
+    },
+    {
+      "Id": "80e2379f-095e-4006-8a1b-fa49a9bd14a2",
+      "Name": "Line02",
+      "ObjectIDs": [
+        {
+          "Kind": "Reflex",
+          "Value": "2345"
+        }
+      ],
+    }
+  ]
+
+  EOF
+```
+
+GET /:referential_slug/lines
 
 ##Modifier une Line dans un Referential
 
@@ -506,54 +560,72 @@ POST /:referential_slug/stop_areas
 
 **Consulter un StopArea disponible:** 
 
-GET /:referential_slug/stop_areas/
+>Consulter un StopArea disponible:
 
-[
-  {
-    "Id": "65585332-ca56-4c0b-9992-1946ca77d196",
-    "Name": "TestStopArea",
-    "ObjectIDs": [
-      {
-        "Kind": "Skybus",
-        "Value": "boaarle"
-      }
-    ],
-    "UpdatedAt": "2016-12-22T12:27:36.623814602+01:00",
-    "RequestedAt": "2016-12-22T12:27:36.623814602+01:00"
-  }
-]
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
+
+  [
+    {
+      "Id": "65585332-ca56-4c0b-9992-1946ca77d196",
+      "Name": "TestStopArea",
+      "ObjectIDs": [
+        {
+          "Kind": "Skybus",
+          "Value": "boaarle"
+        }
+      ],
+      "UpdatedAt": "2016-12-22T12:27:36.623814602+01:00",
+      "RequestedAt": "2016-12-22T12:27:36.623814602+01:00"
+    }
+  ]
+
+  EOF
+```
+
+GET /:referential_slug/stop_areas/
 
 
 **Consulter tous les StopAreas disponibles:** 
 
-GET /:referential_slug/stop_areas/:uuid
+>Consulter tous les StopAreas disponibles:
 
-[
-  {
-    "Id": "65585332-ca56-4c0b-9992-1946ca77d196",
-    "Name": "TestStopArea",
-    "ObjectIDs": [
-      {
-        "Kind": "Skybus",
-        "Value": "boaarle"
-      }
-    ],
-    "UpdatedAt": "2016-12-22T12:27:36.623814602+01:00",
-    "RequestedAt": "2016-12-22T12:27:36.623814602+01:00"
-  },
-  {
-    "Id": "65585332-ca56-4c0b-9992-1946ca77d196",
-    "Name": "StopArea",
-    "ObjectIDs": [
-      {
-        "Kind": "Skybus",
-        "Value": "boaarle"
-      }
-    ],
-    "UpdatedAt": "2016-12-22T12:27:36.623814602+01:00",
-    "RequestedAt": "2016-12-22T12:27:36.623814602+01:00"
-  } 
-]
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
+
+  [
+    {
+      "Id": "65585332-ca56-4c0b-9992-1946ca77d196",
+      "Name": "TestStopArea",
+      "ObjectIDs": [
+        {
+          "Kind": "Skybus",
+          "Value": "boaarle"
+        }
+      ],
+      "UpdatedAt": "2016-12-22T12:27:36.623814602+01:00",
+      "RequestedAt": "2016-12-22T12:27:36.623814602+01:00"
+    },
+    {
+      "Id": "65585332-ca56-4c0b-9992-1946ca77d196",
+      "Name": "StopArea",
+      "ObjectIDs": [
+        {
+          "Kind": "Skybus",
+          "Value": "boaarle"
+        }
+      ],
+      "UpdatedAt": "2016-12-22T12:27:36.623814602+01:00",
+      "RequestedAt": "2016-12-22T12:27:36.623814602+01:00"
+    } 
+  ]
+
+  EOF
+```
+
+GET /:referential_slug/stop_areas/:uuid
 
 ##Modifier un StopArea dans un Referential
 
@@ -620,99 +692,117 @@ Un StopVisit est constitué de:
 
 **Consulter un StopVisit:**  
 
-GET /:referential_slug/stop_visits/:uuid
+>Consulter un StopVisit:
 
-{
-  "ArrivalStatus": "onTime",
-  "DepartureStatus": "onTime",
-  "Id": "b47c65d5-bcef-4dfa-a847-41baba3beab1",
-  "ObjectIDs": { "reflex": "FR:77491:ZDE:34004:STIF" }
-  "PassageOrder": 44,
-  "Schedules" : [
-     {
-        "Kind":"aimed",
-        "ArrivalTime":"2017-01-01T13:00:00.000Z",
-        "DepartureTime":"2017-01-01T13:02:00.000Z”
-    },
-   {
-        "Kind":"expected",
-        "ArrivalTime":"2017-01-01T13:00:00.000Z",
-        "DepartureTime":"2017-01-01T13:02:00.000Z”
-    }
-  ],
-  "StopArea": "65585332-ca56-4c0b-9992-1946ca77d196",
-  "VehicleJourney": "75624f6f-89e9-4a27-8c4e-68d8f044d6cf"
-}
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
 
-
-**Consulter l‘ensemble des StopVisits:**
-
-GET /:referential_slug/stop_visits/
-
-[
   {
     "ArrivalStatus": "onTime",
     "DepartureStatus": "onTime",
     "Id": "b47c65d5-bcef-4dfa-a847-41baba3beab1",
-    "ObjectIds": {
-      "Reflex": "1234"
-    },
+    "ObjectIDs": { "reflex": "FR:77491:ZDE:34004:STIF" }
     "PassageOrder": 44,
-    "Attributes" : {
-      "JourneyNote":"abcd"
-    }
-    "References" : {
-      "JourneyPattern":{"ObjectId":{"1234":"5678"}, "Id":"42"}
-    }
-    "Schedules": [
-      {
-        "ArrivalTime": "2016-12-22T12:45:29+01:00",
-        "DepartureTime": "2016-12-22T12:45:29+01:00",
-        "Kind": "expected"
+    "Schedules" : [
+       {
+          "Kind":"aimed",
+          "ArrivalTime":"2017-01-01T13:00:00.000Z",
+          "DepartureTime":"2017-01-01T13:02:00.000Z”
       },
-      {
-        "ArrivalTime": "0001-01-01T00:00:00Z",
-        "DepartureTime": "0001-01-01T00:00:00Z",
-        "Kind": "actual"
-      },
-      {
-        "ArrivalTime": "2016-12-22T12:43:05+01:00",
-        "DepartureTime": "2016-12-22T12:43:05+01:00",
-        "Kind": "aimed"
+     {
+          "Kind":"expected",
+          "ArrivalTime":"2017-01-01T13:00:00.000Z",
+          "DepartureTime":"2017-01-01T13:02:00.000Z”
       }
     ],
     "StopArea": "65585332-ca56-4c0b-9992-1946ca77d196",
     "VehicleJourney": "75624f6f-89e9-4a27-8c4e-68d8f044d6cf"
-  },
-  {
-    "ArrivalStatus": "onTime",
-    "DepartureStatus": "onTime",
-    "Id": "ed2f2906-5c64-4211-9eda-c2ec68375b19",
-    "ObjectIds": {
-      "Reflex": "1234"
-    },
-    "PassageOrder": 44,
-    "Schedules": [
-      {
-        "ArrivalTime": "2016-12-22T17:44:38+01:00",
-        "DepartureTime": "2016-12-22T17:44:38+01:00",
-        "Kind": "aimed"
-      },
-      {
-        "ArrivalTime": "2016-12-22T17:44:38+01:00",
-        "DepartureTime": "2016-12-22T17:44:38+01:00",
-        "Kind": "expected"
-      },
-      {
-        "ArrivalTime": "0001-01-01T00:00:00Z",
-        "DepartureTime": "0001-01-01T00:00:00Z",
-        "Kind": "actual"
-      }
-    ],
-    "StopArea": "65585332-ca56-4c0b-9992-1946ca77d196",
-    "VehicleJourney": "a80e1cd3-204f-4aff-bdaa-793d690ae3a8"
   }
-]
+
+  EOF
+```
+
+GET /:referential_slug/stop_visits/:uuid
+
+
+**Consulter l‘ensemble des StopVisits:**
+
+>Consulter l'ensemble des StopVisits:
+
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
+
+  [
+    {
+      "ArrivalStatus": "onTime",
+      "DepartureStatus": "onTime",
+      "Id": "b47c65d5-bcef-4dfa-a847-41baba3beab1",
+      "ObjectIds": {
+        "Reflex": "1234"
+      },
+      "PassageOrder": 44,
+      "Attributes" : {
+        "JourneyNote":"abcd"
+      }
+      "References" : {
+        "JourneyPattern":{"ObjectId":{"1234":"5678"}, "Id":"42"}
+      }
+      "Schedules": [
+        {
+          "ArrivalTime": "2016-12-22T12:45:29+01:00",
+          "DepartureTime": "2016-12-22T12:45:29+01:00",
+          "Kind": "expected"
+        },
+        {
+          "ArrivalTime": "0001-01-01T00:00:00Z",
+          "DepartureTime": "0001-01-01T00:00:00Z",
+          "Kind": "actual"
+        },
+        {
+          "ArrivalTime": "2016-12-22T12:43:05+01:00",
+          "DepartureTime": "2016-12-22T12:43:05+01:00",
+          "Kind": "aimed"
+        }
+      ],
+      "StopArea": "65585332-ca56-4c0b-9992-1946ca77d196",
+      "VehicleJourney": "75624f6f-89e9-4a27-8c4e-68d8f044d6cf"
+    },
+    {
+      "ArrivalStatus": "onTime",
+      "DepartureStatus": "onTime",
+      "Id": "ed2f2906-5c64-4211-9eda-c2ec68375b19",
+      "ObjectIds": {
+        "Reflex": "1234"
+      },
+      "PassageOrder": 44,
+      "Schedules": [
+        {
+          "ArrivalTime": "2016-12-22T17:44:38+01:00",
+          "DepartureTime": "2016-12-22T17:44:38+01:00",
+          "Kind": "aimed"
+        },
+        {
+          "ArrivalTime": "2016-12-22T17:44:38+01:00",
+          "DepartureTime": "2016-12-22T17:44:38+01:00",
+          "Kind": "expected"
+        },
+        {
+          "ArrivalTime": "0001-01-01T00:00:00Z",
+          "DepartureTime": "0001-01-01T00:00:00Z",
+          "Kind": "actual"
+        }
+      ],
+      "StopArea": "65585332-ca56-4c0b-9992-1946ca77d196",
+      "VehicleJourney": "a80e1cd3-204f-4aff-bdaa-793d690ae3a8"
+    }
+  ]
+
+  EOF
+```
+
+GET /:referential_slug/stop_visits/
 
 ##supprimer un StopVisit dans un Referential
 
@@ -885,42 +975,60 @@ Un VehicleJourney est constitué de :
 
 **Consulter un VehicleJourney:**
 
-GET /:referential_slug/vehicle_journeys/:uuid
+>Consulter un VehicleJourney:
 
-{
-  "Id": "217d22f9-7e5a-43b8-ba31-9992a9e77153",
-  "ObjectIds": {
-    "Reflex": "1234"
-  },
-  "Line": "65585332-ca56-4c0b-9992-1946ca77d196",
-  "Attributes" : {
-      "JourneyNote":"abcd"
-  },
-  "References" : {
-    "JourneyPattern":{"ObjectId":{"1234":"5678"}, "Id":"42"}
-  }
-}
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
 
-**Consulter l’ensemble des VehicleJourneys:** 
-
-GET /:referential_slug/vehicle_journeys/
-
-[
-  {
-    "Id": "6fafa63f-83a3-491d-bb9b-6873991d9c1f",
-    "ObjectIds": {
-      "Reflex": "1234"
-    },
-    "Line": "65585332-ca56-4c0b-9992-1946ca77d196",
-  },
   {
     "Id": "217d22f9-7e5a-43b8-ba31-9992a9e77153",
     "ObjectIds": {
       "Reflex": "1234"
     },
     "Line": "65585332-ca56-4c0b-9992-1946ca77d196",
+    "Attributes" : {
+        "JourneyNote":"abcd"
+    },
+    "References" : {
+      "JourneyPattern":{"ObjectId":{"1234":"5678"}, "Id":"42"}
+    }
   }
-]
+
+  EOF
+```
+
+GET /:referential_slug/vehicle_journeys/:uuid
+
+**Consulter l’ensemble des VehicleJourneys:** 
+
+>Consulter l'ensemble des VehicleJourneys:
+
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
+
+  [
+    {
+      "Id": "6fafa63f-83a3-491d-bb9b-6873991d9c1f",
+      "ObjectIds": {
+        "Reflex": "1234"
+      },
+      "Line": "65585332-ca56-4c0b-9992-1946ca77d196",
+    },
+    {
+      "Id": "217d22f9-7e5a-43b8-ba31-9992a9e77153",
+      "ObjectIds": {
+        "Reflex": "1234"
+      },
+      "Line": "65585332-ca56-4c0b-9992-1946ca77d196",
+    }
+  ]
+
+  EOF
+```
+
+GET /:referential_slug/vehicle_journeys/
 
 ##Supprimer un VehicleJourney dans un Referential
 
