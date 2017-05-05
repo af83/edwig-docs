@@ -58,7 +58,18 @@ Les gestionnaires de Collecte et de Diffusion sont créés et prêts à l’usag
 
 **Création d’un referential:**  
 
-POST /_referentials { "Slug": "test" }
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
+
+  {
+    "Slug": "test"
+  }
+
+  EOF
+```
+
+POST /_referentials
 
  
 ##Modifier un Referential 
@@ -66,6 +77,16 @@ POST /_referentials { "Slug": "test" }
 Je dois indiquer **l'identifiant du Referential (dans l'URL)** 
 
 **Modification d’un referential:** 
+
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
+
+  {
+    "Slug": "another_test"
+  }
+
+```
 
 PUT /_referentials/:uuid { "Slug": "another_test" }
 
@@ -194,25 +215,34 @@ Exemple d'attribut soumis a l'API:
 
 **Création d'un Partner:**
 
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
+
+  {
+    "slug": "STIF",
+    "connectorTypes" : [ 
+      "SIRIStopMonitoringRequestBroadcaster", 
+      "SIRIEstimatedTimeTableSubscriptionBroadcaster", 
+      "SIRICheckStatusRequestClient", 
+      "SIRICheckStatusRequestServer", 
+      "SIRIStopMonitoringRequestCollector" 
+    ],
+    "settings": { 
+      "remote_url": "https://relai.stif.info", 
+      "remote_credential": "RATPDEV:1234", 
+      "remote_maxRequestRate" : 30, 
+      "local_credential": "STIF:98395d4a8251ba8bf209ea96a63f0ed254ba0cc24692a06aad491c744e466b09", 
+      "local_maxRequestRate" : 120 
+    },
+  }
+
+  EOF
+```
+
 POST /:referential_slug/partners
 
-{
-  "slug": "STIF",
-  "connectorTypes" : [ 
-    "SIRIStopMonitoringRequestBroadcaster", 
-    "SIRIEstimatedTimeTableSubscriptionBroadcaster", 
-    "SIRICheckStatusRequestClient", 
-    "SIRICheckStatusRequestServer", 
-    "SIRIStopMonitoringRequestCollector" 
-  ],
-  "settings": { 
-    "remote_url": "https://relai.stif.info", 
-    "remote_credential": "RATPDEV:1234", 
-    "remote_maxRequestRate" : 30, 
-    "local_credential": "STIF:98395d4a8251ba8bf209ea96a63f0ed254ba0cc24692a06aad491c744e466b09", 
-    "local_maxRequestRate" : 120 
-  },
-}
+
 
 ##Consulter les Partners disponibles
 
@@ -304,22 +334,29 @@ Exemple d'attributs soumis à l'API:
 
 **Modification d’un Partner:** 
 
-PUT /:referential_slug/partners/:uuid
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
 
-{
-  "name": "STIF",
-  "connectorTypes" : [ 
-    "SIRIStopMonitoringRequestBroadcaster", 
-    "SIRIEstimatedTimeTableSubscriptionBroadcaster", 
-    "SIRICheckStatusRequestClient", 
-    "SIRICheckStatusRequestServer", 
-    "SIRIStopMonitoringRequestCollector" 
-  ],
-  "settings": { 
-    "remote_url": "https://relai.stif.info", 
-    "remote_credential": "RATPDEV:1234"
-  },
-}
+  {
+    "name": "STIF",
+    "connectorTypes" : [ 
+      "SIRIStopMonitoringRequestBroadcaster", 
+      "SIRIEstimatedTimeTableSubscriptionBroadcaster", 
+      "SIRICheckStatusRequestClient", 
+      "SIRICheckStatusRequestServer", 
+      "SIRIStopMonitoringRequestCollector" 
+    ],
+    "settings": { 
+      "remote_url": "https://relai.stif.info", 
+      "remote_credential": "RATPDEV:1234"
+    },
+  }
+
+  EOF
+ ```
+
+PUT /:referential_slug/partners/:uuid
 
 ##Supprimer un Partner
 
@@ -411,26 +448,32 @@ La Line doit:
 
 **Création d’une Line:** 
 
-POST /:referential_slug/lines
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
 
-{
-  "Attributes": {
-    "JourneyNote": "abcd"
-  },
-  "Name": "Line01",
-  "ObjectIDs": {
-    "hastus": "1234"
-  },
-  "References": {
-    "JourneyPattern": {
-      "ObjectId": {
-        "1234": "5678"
-      },
-      "Id": "42"
+  {
+    "Attributes": {
+      "JourneyNote": "abcd"
+    },
+    "Name": "Line01",
+    "ObjectIDs": {
+      "hastus": "1234"
+    },
+    "References": {
+      "JourneyPattern": {
+        "ObjectId": {
+          "1234": "5678"
+        },
+        "Id": "42"
+      }
     }
   }
-}
 
+  EOF
+```
+
+POST /:referential_slug/lines
 
 ##Consulter les Lines disponibles
 
@@ -521,25 +564,32 @@ A la modification, la Line est validée. Les règles sont les mêmes qu’à la 
 
 **Modification d’une Line:**  
 
-PUT /:referential_slug/lines/:uuid
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
 
-{
-  "Attributes": {
-    "JourneyNote": "abcd"
-  },
-  "Name": "Line01",
-  "ObjectIDs": {
-    "hastus": "1234"
-  },
-  "References": {
-    "JourneyPattern": {
-      "ObjectId": {
-        "1234": "5678"
-      },
-      "Id": "42"
+  {
+    "Attributes": {
+      "JourneyNote": "abcd"
+    },
+    "Name": "Line01",
+    "ObjectIDs": {
+      "hastus": "1234"
+    },
+    "References": {
+      "JourneyPattern": {
+        "ObjectId": {
+          "1234": "5678"
+        },
+        "Id": "42"
+      }
     }
   }
-}
+
+  EOF
+```
+
+PUT /:referential_slug/lines/:uuid
 
 ##Supprimer une Line dans un Referential
 
@@ -591,30 +641,35 @@ Le StopArea doit :
 
 **Création d’un stopArea:** 
 
-POST /:referential_slug/stop_areas
-
-{
-  "Attributes": {
-    "JourneyNote": "abcd"
-  },
-  "CollectedAlways": true,
-  "Name": "TestStopArea",
-  "ObjectIDs": [
-    {
-      "Kind": "Skybus",
-      "Value": "boaarle"
-    }
-  ],
-  "References": {
-    "JourneyPattern": {
-      "ObjectId": {
-        "1234": "5678"
-      },
-      "Id": "42"
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
+  {
+    "Attributes": {
+      "JourneyNote": "abcd"
+    },
+    "CollectedAlways": true,
+    "Name": "TestStopArea",
+    "ObjectIDs": [
+      {
+        "Kind": "Skybus",
+        "Value": "boaarle"
+      }
+    ],
+    "References": {
+      "JourneyPattern": {
+        "ObjectId": {
+          "1234": "5678"
+        },
+        "Id": "42"
+      }
     }
   }
-}
 
+  EOF
+```
+
+POST /:referential_slug/stop_areas
 
 ##Consulter les StopAreas disponibles 
 
@@ -725,29 +780,36 @@ A la modification, le StopArea est validé. Les règles sont les mêmes qu’à 
 
 **Modification d’un stopArea:**
 
-PUT /:referential_slug/stop_areas/:uuid
+```shell
+  curl -d @- "<URL>"
+  -H "Authorization: <Clé API>" <<EOF
 
-{
-  "Attributes": {
-    "JourneyNote": "abcd"
-  },
-  "CollectedAlways": true,
-  "Name": "TestStopArea",
-  "ObjectIDs": [
-    {
-      "Kind": "Skybus",
-      "Value": "boaarle"
-    }
-  ],
-  "References": {
-    "JourneyPattern": {
-      "ObjectId": {
-        "1234": "5678"
-      },
-      "Id": "42"
+  {
+    "Attributes": {
+      "JourneyNote": "abcd"
+    },
+    "CollectedAlways": true,
+    "Name": "TestStopArea",
+    "ObjectIDs": [
+      {
+        "Kind": "Skybus",
+        "Value": "boaarle"
+      }
+    ],
+    "References": {
+      "JourneyPattern": {
+        "ObjectId": {
+          "1234": "5678"
+        },
+        "Id": "42"
+      }
     }
   }
-}
+
+  EOF
+```
+
+PUT /:referential_slug/stop_areas/:uuid
 
 ##Supprimer un StopArea dans un Referential
 
