@@ -7,12 +7,12 @@ language_tabs:
 search: true
 ---
 
-# Introduction
+#Introduction
 
-Tout d'abord pour commencer à utiliser Edwig vous devrez cloner le repository suivant:     
-- [https://github.com/af83/edwig](https://github.com/af83/edwig)    
-    
-Dans cette documentation nous allons voir le fonctionnement d'Edwig en détaillant étape par étape chacun des topics suivant:  
+First of all, to begin using Edwig, you'll have to clone the following repository:
+- [https://github.com/af83/edwig](https://github.com/af83/edwig)
+
+In this documentation, we'll see how Edwig works by detailing, step by step, each one of the following topics:
 
 1. Referential 
 2. Partner 
@@ -33,30 +33,30 @@ Dans cette documentation nous allons voir le fonctionnement d'Edwig en détailla
 
 
 
-# 1. Referential 
- 
-Un referential permet d’isoler plusieurs réseaux au sein d’un même serveur. 
- 
-##Edwig gère des Referentials. 
- 
-Un Referential est composé de:
- 
-* Un uuid 
-* Un slug 
-* Une liste de Partners 
-* Un gestionnaire de Collecte 
-* Un gestionnaire de Diffusion 
-* Un modèle representant le réseau de transport (StopAreas, Lines, ...) 
- 
-##Créer un Referential 
+# 1. Referential
 
-A la création, je dois indiquer **un slug**. 
- 
-Un Referential possède un uuid déterminé par Edwig. 
-Aucun Partner ni donnée dans le modèle (StopAreas, Lines, etc) n’est défini par défaut.  
-Les gestionnaires de Collecte et de Diffusion sont créés et prêts à l’usage. 
+A Referential allows us to put apart many networks into a same server.
 
-**Création d’un referential:**  
+##Edwig manages Referentials.
+
+A Referential is composed by:
+
+* a uuid 
+* a slug 
+* a Partner list
+* a collect manager
+* a diffusion manager
+* a model representing the transport network (StopAreas, Lines, ...)
+
+##Create a Referential
+
+While creating a Referential, we have to indicate a **slug**.
+
+A Referential owns a uuid set by Edwig.
+No Partner nor data into the model (StopAreas, Lines, etc...) are defined by default.
+Collect and diffusion managers are created and ready to use.
+
+**Create a Referential**
 
 ```shell
   curl -d @- "<URL>"
@@ -71,12 +71,12 @@ Les gestionnaires de Collecte et de Diffusion sont créés et prêts à l’usag
 
 POST /_referentials
 
- 
-##Modifier un Referential 
+##Modify a Referential
 
-Je dois indiquer **l'identifiant du Referential (dans l'URL)** 
+We have to indicate the **Referential's ID (into the URL)**.
 
-**Modification d’un referential:** 
+**Modify a Referential:**
+
 
 ```shell
   curl -d @- "<URL>"
@@ -90,27 +90,23 @@ Je dois indiquer **l'identifiant du Referential (dans l'URL)**
 
 PUT /_referentials/:uuid { "Slug": "another_test" }
 
-##Supprimer un Referential 
+##Delete a Referential
 
+We have to indicate the **Referential's ID (into the URL)**.
 
-Je dois indiquer **l'identifiant du Referential (dans l'URL)** 
+The Referential and associated elements (Partners, managers, models) will be destroyed.
 
-Le Referential est supprimé. 
-
-Tous les éléments associés (Partners, gestionnaires, modèle) sont supprimés aussi. 
-
-**Suppression d’un referential:** 
+**Delete a Referential**
 
 DELETE /_referentials/:uuid
 
-##Consulter les Referentials disponibles 
+##Consult Available Referentials
 
-Je peux consulter les informations concernant un ou tous les Referentials d’Edwig : 
+We can consult the informations about one or all Edwig's Referentials:
 
-**Consultation d’un referential :** 
+**Consult one Referential**
 
->Consultation d'un referential:
-
+>For one Referential:
 ```shell
   curl -d @- "<URL>"
   -H "Authorization: <Clé API>" <<EOF
@@ -128,9 +124,9 @@ Je peux consulter les informations concernant un ou tous les Referentials d’Ed
 
 GET /_referentials/:uuid
 
-**Consultation de tous les referentials:**  
+**Consult all Referentials:**  
 
->Consultation de tout les referentials:
+>For all Referentials:
 
 ```shell
   curl -d @- "<URL>"
@@ -165,55 +161,54 @@ GET /_referentials
 
 
 
-#2. Partner 
+# 2. Partner
 
-Un partner est un transporteur 
+A Partner is a transporter.
 
-##Edwig gère des Partners pour chaque Referential 
+##Edwig manages Partners for each Referential
 
-Un partner est constitué de:
-  
-* uuid (défini par Edwig)
-* slug
-* operationnalStatus (défini par Edwig)
-* liste de connecteurs (défini par Edwig)
-* liste de types de connecteurs
-* liste de paramètres (du type clé/valeur)
+A Partner is composed by:
 
-Les paramètres peuvent être en particulier: 
+* a uuid (Defined by Edwig)
+* a slug
+* an operationnalStatus (Defined by Edwig)
+* a connectors list (Defined by Edwig)
+* a connectors's kind list
+* a parameters list (key/value type)
+
+The parameters can particularily be:
 
 * remote_objectid_kind
 * remote_url
 * remote_credential
 * local_credential
 
-**remote_objectid_kind:** sert à différencier le type (kind) d'objectids utilisés/renvoyés par le partenaire. Un remote objectIdKind ne doit pas contenir d'espace ni de ':'.
+**remote_objectid_kind:** Is used to différentiate the Objectids's kind used/sent by the partner. A remote objectIdKind may not have spaces nor ':'.
 
-**remote_url:** adresse du server externe utilisée par exemple pour faire des requête SIRI.
+**remote_url:** External server's address used, by example, to make SIRI requests.
 
-**remote_credential:** identification pour le serveur externe (utilisé en ReauestorRef par exemple en SIRI).
+**remote_credential:** Identification for the external server (Used in RequestorRef, by example, in SIRI).
 
-**local_credential:** identifiant qui sera utilisé par le serveur externe pour réaliser des requêtes vers Edwig (pour que l'on reconnaisse la provenance d'une demande).
+**local_credential:** ID that will be used by the external server to realise requests to Edwig (To know where a request come from).
 
-La liste des Partners est indépendante pour chaque Referential.
+The Partners's list is independant for each Referential.
 
-##Créer un Partner
+##Create a Partner
 
+While creating the Partner, we have to indicate a **slug**
 
-A la création, je dois indiquer **un slug**
+We can indicate:
 
-Je peux indiquer: 
+* the wanted connector's kind
+* a parameters list
 
-* les types de connecteur souhaités
-* une liste de paramètres
+While creating it, the Patner is validated. In case of failure to comply with one of the validation rules, the Partner is not created and errors are returned in the API response. The connectors's use includes the validation rules, unique to each connector.
 
-A la création, le Partner est validé. En cas de non respect d’une des règles de validation, le Partner n’est pas créé et les erreurs sont retournées dans la réponse de l’API. L’utilisation de Connectors impliquent des règles de validation, propres à chaque connecteur.
+A Partner has its operationalStatus set to unknown by default.
 
-Un Partner a son operationnalStatus à unknown par défaut.
+Example of attributs sent to the API:
 
-Exemple d'attribut soumis a l'API:
-
-**Création d'un Partner:**
+**Create a Partner**
 
 ```shell
   curl -d @- "<URL>"
@@ -242,15 +237,13 @@ Exemple d'attribut soumis a l'API:
 
 POST /:referential_slug/partners
 
+##Consult Available Partners
 
+We can consult the informations concerning one or all the Edwig's Referentials.
 
-##Consulter les Partners disponibles
+**Consult one Referential:**
 
-Je peux consulter les informations concernant un ou tous les Referentials d’Edwig:
-
-**Consultation d’un Partner:** 
-
->Consultation d'un partner:
+>For one Referential:
 
 ```shell
   curl -d @- "<URL>"
@@ -275,9 +268,9 @@ Je peux consulter les informations concernant un ou tous les Referentials d’Ed
 
 GET /:referential_slug/partners/:uuid
  
-**Consultation de l’ensemble des Partners:** 
+**Consult all the Referentials:** 
 
->Consultation de l'ensemble des Partners:
+>For all the Referentials:
 
 ```shell
   curl -d @- "<URL>"
@@ -318,21 +311,21 @@ GET /:referential_slug/partners/:uuid
 
 GET /:referential_slug/partners
 
-##Modifier un Partner
+##Modify a Partner
 
-Je dois indiquer **l'identifiant du Partner (dans l'URL)**
+We have to indicate the **Partner's ID (into the URL)**
 
-Je peux indiquer:
+We can indicate:
 
-* le nouveau slug
-* la nouvelle liste des types de connecteur souhaités
-* la nouvelle liste de paramètres
+* the new slug
+* the new list of wanted connector's kinds
+* the new paramaters list
 
-A la modification, le Partner est validé. Les règles sont les mêmes qu’à la création. Si le Partner n’est pas valide, la modification n’est pas prise en compte.
+While modifiying it, the Partner is validated. The rules are the same as the creation's ones. If the Partner isn't valid, the modification isn't considered.
 
-Exemple d'attributs soumis à l'API: 
+Example of attributes sent to the API:
 
-**Modification d’un Partner:** 
+**Modify a Partner:**
 
 ```shell
   curl -d @- "<URL>"
@@ -358,27 +351,27 @@ Exemple d'attributs soumis à l'API:
 
 PUT /:referential_slug/partners/:uuid
 
-##Supprimer un Partner
+##Delete a Partner
 
-Je dois indiquer **l'identifiant du Partner (dans l'URL)**
+We have to indicate the **Partner's ID (Into the URL)**.
 
-Les Connectors associés sont également supprimés.
+The associated connectors are deleted too.
 
-**Suppression d’un Partner:**
+**Delete a Partner:**
 
 DELETE /:referential_slug/partners/:uuid
 
-##Liste de connecteurs
+##Connectors list
 
-Un Partner ne peut avoir qu’un seul Connector d’un même type.
+A Partner can only have one Connector with the same kind.
 
-Les Connectors régissent les échanges réalisés avec le Partner associé. Chaque Connecteur prend en charge l’envoi ou la réception d’un message dans un protocole donné.
+Connectors governs the trades realised with the associated Partner. Each Connector take over the sending or the receiving of a message into a given protocol.
 
-Les Connectors sont instanciés automatiquement en fonction de la liste de type de connectors définie dans le Partner. Si le type d’un Connector “disparaît” de cette liste, le Connector est détruit.
+Connectors are atomatically instanciated, based on connector's kinds list defined in the Partner. If the Connector's kind "disappear" from this list, the connector is destroyed.
 
-Un Connector peut induire des contraintes de validation dans le Partner (setting obligatoire, autre Connector requis, etc).
+A Connector can include validation constraints in the Partner (mandatory setting, other Connectors needed, etc...).
 
-Connectors existants:
+Existing Connectors:
 
 * Siri-check-status-client
 * Siri-check-status-server
@@ -387,20 +380,18 @@ Connectors existants:
 * Siri-service-request-broadcaster
 * Siri-stop-points-discovery-request-broadcaster
 
-**siri-check-status-client:** Sert à émettre des requêtes de CheckStatus via un Guardian (envoi de requêtes automatique toutes les 30 secondes). Nécessite *remote_url* pour l'adresse du serveur et *remote_credentials* pour s'identifier.
+**siri-check-status-client:** Is used to emit CheckStatus Resquests by a Guardian (automatically sending requests each 30 secondes). Need *remote_url* to the server's address and *remote_credentials* to identify.
 
-**siri-check-status-server:** Sert à répondre aux requêtes de CheckStatus. Nécessite *local_credential* pour identifier les requêtes.
+**siri-check-status-server:** Is used to answer the CheckStatus requests. Need *local_credential* to identify the requests.
 
-**siri-stop-monitoring-request-collector** Sert à émettre des requêtes de StopMonitoring via un Guardian (envoi de requêtes automatiquement si un StopArea n'a pas été mis à jour depuis une minute ou plus). Nécessite *remote_objectid_kind* pour savoir ce que le partenaire utilise comme type d'objectid, *remote_url* pour l'adresse du serveur, et *remote_credential* pour s'identifier.
+**siri-stop-monitoring-request-collector** Is used to answer the StopMonitoring by a Guardian (Automatically sending requests if a StopArea haven't been updated since a minute or more). Need *remote_objectid_kind* to known what kind of objectid the partner is using, *remote_url* for the server address, and *remote_credential* to indentify.
 
-**siri-stop-monitoring-request-broadcaster:** Sert à répondre aux requêtes de StopMonitoring. Nécessite *remote_objectid_kind* pour savoir ce que le partenaire utilise comme type d'objectid et *local_credential* pour identifier les requêtes.
+**siri-stop-monitoring-request-broadcaster:** Is used to answer the StopMonitoring requests. Need *remote_objectid_kind* to know what kind of objectid the partner is using and *local_credential* to indentify requests.
 
-**siri-service-request-broadcaster:** Sert à répondre aux requêtes de GetSiriService. Nécessite *remote_objectid_kind* pour savoir ce que le partenaire utilise comme type d'objectid et *local_credential* pour identifier les requêtes.
+**siri-service-request-broadcaster:** Is used to answer the GetSiriService requests. Need *remote_objectid_kind* to know what kind of objectid the partner is using and *local_credential*
+to identify requests.
 
-**siri-stop-points-discovery-request-broadcaster:** Sert à répondre aux requêtes de StopPointDiscovery. Nécessite *remote_objectid_kind* pour savoir ce que le partenaire utilise comme type d'objectid et *local_credential* pour identifier les requestes.
-
-
-
+**siri-stop-points-discovery-request-broadcaster:** Is used to answer StopPointDiscovery requests. Need *remote_objectid_kind* to know what kind of objectid the partner is using and *local_credential* to identify requests.
 
 
 
@@ -408,45 +399,48 @@ Connectors existants:
 
 
 
-#3. Line
 
-Une ligne regroupe un ou plusieurs **itinéraires** - **“Route”** en anglais, appelés aussi **“séquences d’arrêts”** en français - prédéfinis (généralement l’aller et le retour) de transport en commun définissant un service offert au public bien identifié, le plus souvent par un nom ou un code commercial (connu du voyageur).
 
-Une ligne de transport est identifiée sur le terrain par son nom ou son code commercial.
-Dans les données de référence publiées par le STIF, pour chaque ligne commerciale, une identification unique et pérenne est ajoutée via un identifiant unique (ID_Line).
-En attribut, on trouve également la référence à la ligne administrative (ID_GroupOfLines) dont dépend la ligne commerciale ainsi qu’un code technique de la ligne (ExternalCode_Line) permettant de faire le lien avec les données Ligne dans les données d’offre théorique GTFS. Dans Chouette, cette notion est gérée par un objectid.
 
-De plus, une ligne est définie par un réseau auquel elle appartient, le transporteur qui la gère, et son mode.
+# 3. Line
 
-Pour fonctionner une ligne dépend d’une **mission** - **“Journey Pattern”** en anglais -, d’une course - **“Vehicule Journey Pattern”** en anglais - et d’un calendrier qui définit les dates de validité des horaires et les jours effectifs (exemple : les lundis, mardis, jeudis et vendredi de mars 2016 à juin 2016).
+A line includes one or more predefined public transport's **routes** defining an offered service to a well identified public, most of the time by a name or a commercial code (known as traveller).
 
-##Edwig gère des Lines pour chaque Referential
+A transport line is identified on the field by its name or its commercial code.
+In the reference data published by the STIF, for each commecial line, a unique and sustainable identification is added by a unique ID (ID_Line).
+In the attributs, we can also find the administrative line's reference (ID_GroupOfLines) which depends on the commercial line and the line's technical code (ExternalCode_Line) allowing us to do the link with the Line's data in the theorical offer's data (GTFS). In Chouette, this notion is managed by an objectid.
 
-Une Line est constituée de:
+Moreover, a line is defined by a network which owns it, the transporter which manages it and its mode.
 
-* uuid (défini par Edwig)
-* un name
-* des ObjectIDs
-* des attributs 
-* des references
+To work, a line depends on a **journey Pattern**, a **vehicle Journey Pattern** and a calendar which defines the dates of the schedules's validity and effective days (example: mondays, tuesdays, thursdays and fridays from March 2016 to Jun 2016).
 
-La liste des Lines est indépendante pour chaque Referential.
+##Edwig manage the lines for each Referential
 
-##Créer une Line dans un Referential
+A Line is composed by:
 
-Je dois indiquer **le nom de la ligne**
+* A uuid (defined by Edwig)
+* A name
+* ObjectIDs
+* Attributs 
+* References
 
-Je peux indiquer **une liste d’ObjectIDs**
+The Lines list is independante for each Referential.
 
-A la création, la Line est validée. En cas de non respect d’une des règles de validation, la Line n’est pas créée et les erreurs sont retournées dans la réponse de l’API. 
+##Create a Line in a Referential
 
-La Line doit:
+We have to indicate the **Line's name**.
 
-* avoir un Name non vide
-* utiliser des ObjectIDs valides
-* utiliser des ObjectIDs non utilisés par une autre Line
+We can indicate an **ObjectId list**.
 
-**Création d’une Line:** 
+While creating it, the Line is validated. in case of failure to comply with the validation rules, the Line isn't created and errors are returned in the API response.
+
+The Line have to:
+
+* Have a non-empty Name
+* Use valid ObjectIDs
+* Use ObjectIDs unused by orther line
+
+**Create Line**
 
 ```shell
   curl -d @- "<URL>"
@@ -475,11 +469,11 @@ La Line doit:
 
 POST /:referential_slug/lines
 
-##Consulter les Lines disponibles
+##Consult Available Lines
 
-**Consulter une ligne:**
+**Consult one Line:**
 
->Consulter une ligne:
+>For one Line:
 
 ```shell
   curl -d @- "<URL>"
@@ -510,9 +504,9 @@ POST /:referential_slug/lines
 
 GET /:referential_slug/lines/:uuid
 
-**Consulter l’ensemble des lignes:** 
+**Consult all the Lines:** 
 
->Consulter l'ensemble des lignes:
+>For all the Lines:
 
 ```shell
   curl -d @- "<URL>"
@@ -552,17 +546,18 @@ GET /:referential_slug/lines/:uuid
 
 GET /:referential_slug/lines
 
-##Modifier une Line dans un Referential
+##Nodify a Line in a Referential
 
-Je dois indiquer **l'identifiant de la Line (dans l'URL)**
-Je peux indiquer:
+We have to indicate the **Line's ID (in the URL)**.
 
-* le nom de la ligne
-* une liste d’ObjectIDs
+We can indicate:
 
-A la modification, la Line est validée. Les règles sont les mêmes qu’à la création. Si la Line n’est pas valide, la modification n’est pas prise en compte.
+* the Line's name
+* the ObjectID list
 
-**Modification d’une Line:**  
+While modifiying it, the Line is validated. The rules are the same as the creation's ones. If the Line isn't valid, the modifications aren't considered.
+
+**modify a Line:**
 
 ```shell
   curl -d @- "<URL>"
@@ -591,10 +586,11 @@ A la modification, la Line est validée. Les règles sont les mêmes qu’à la 
 
 PUT /:referential_slug/lines/:uuid
 
-##Supprimer une Line dans un Referential
+##Delete a Line in a referential
 
-Je dois indiquer **l'identifiant de la Line (dans l'URL)**
-**Suppression d’une Line:**
+We have to indicate the **Line's ID (in the URL)**.
+
+**Delete a Line:**
 
 DELETE /:referential_slug/lines/:uuid
 
@@ -607,39 +603,39 @@ DELETE /:referential_slug/lines/:uuid
 
 
 
-#4. StopAreas
+# 4. StopAreas
 
-Un stopArea correspond à un arrêt d’une ligne
+A StopArea corresponds to a stop on a Line.
 
-##Edwig gère des StopAreas pour chaque Referential
- 
-Un StopArea est constitué de:
+##Edwig can manage the StopAreas for each Referential.
 
-* uuid (défini par Edwig)
-* d’un name
-* des ObjectIDs
+A StopArea is composed by: 
+
+* A uuid (defined by Edwig)
+* A name
+* ObjectIDs
 * CollectedUntil
 * CollectedAlways
 * Attributes
 * References
-* d’une date de dernière mise à jour
-* d’une date de la dernière demande de mise à jour
+* A date of the last update
+* A date of the last update request
 
-##Créer un StopArea dans un Referential
+##Create a StopArea in a Referential
 
-Je dois indiquer **le nom de l’arrêt**
+We have to indicate the **name of the stop**.
 
-Je peux indiquer **une liste d’ObjectIDs**
+We can indicate a **ObjectID list**
 
-A la création, le StopArea est validé. En cas de non respect d’une des règles de validation, la StopArea n’est pas créé et les erreurs sont retournées dans la réponse de l’API. 
+While creating it, the StopArea is validated. In case of failure to comply with the validation rules, the StopArea isn't created and errors are returned in the API response.
 
-Le StopArea doit :
+The StopArea have to:
 
-* avoir un Name non vide
-* utiliser des ObjectIDs valides
-* utiliser des ObjectIDs non utilisés par un autre StopArea
+* Have a non-empty Name 
+* Use valid ObjectIDs
+* Use ObjectIDs unused by other StopArea
 
-**Création d’un stopArea:** 
+**Create a StopArea**
 
 ```shell
   curl -d @- "<URL>"
@@ -671,11 +667,11 @@ Le StopArea doit :
 
 POST /:referential_slug/stop_areas
 
-##Consulter les StopAreas disponibles 
+##Consult Available StopAreas
 
-**Consulter un StopArea disponible:** 
+**Consult one Available StopArea:**
 
->Consulter un StopArea disponible:
+>For one Available StopArea:
 
 ```shell
   curl -d @- "<URL>"
@@ -711,10 +707,9 @@ POST /:referential_slug/stop_areas
 
 GET /:referential_slug/stop_areas/
 
+**Consult all the Available StopAreas:**
 
-**Consulter tous les StopAreas disponibles:** 
-
->Consulter tous les StopAreas disponibles:
+>For all the Available StopAreas:
 
 ```shell
   curl -d @- "<URL>"
@@ -767,18 +762,18 @@ GET /:referential_slug/stop_areas/
 
 GET /:referential_slug/stop_areas/:uuid
 
-##Modifier un StopArea dans un Referential
+##Modify StopArea in a Referential
 
-Je dois indiquer **l'identifiant du StopArea (dans l'URL)**
+We have to indicate the **StopArea's ID(in the URL)**.
 
-Je peux indiquer :
+We can indicate:
 
-* le nom de l’arrêt
-* une liste d’ObjectIDs
+* The stop's name
+* The ObjectID list
 
-A la modification, le StopArea est validé. Les règles sont les mêmes qu’à la création. Si le StopArea n’est pas valide, la modification n’est pas prise en compte.
+While modifiying it, the StopArea is validated. The rules are the same as the creation's ones. If the StopArea isn't valid, the modification isn't considered.
 
-**Modification d’un stopArea:**
+**StopArea modification:** 
 
 ```shell
   curl -d @- "<URL>"
@@ -811,11 +806,11 @@ A la modification, le StopArea est validé. Les règles sont les mêmes qu’à 
 
 PUT /:referential_slug/stop_areas/:uuid
 
-##Supprimer un StopArea dans un Referential
+##Delete a StopArea in a Referential
 
-Je dois indiquer **l'identifiant du StopArea (dans l'URL)**
+We have to indicate the **StopArea ID (in the URL)**.
 
-**Suppression d’un stopArea:** 
+**Delete StopArea:**
 
 DELETE /:referential_slug/stop_areas/:uuid
 
@@ -827,34 +822,35 @@ DELETE /:referential_slug/stop_areas/:uuid
 
 
 
+
 #5. StopVisit
 
-Un stopVisit correspond à l‘horraire de passage d’un bus en particulier sur une ligne particulier un arrêt particulier.
+A StopVisit corresponds to a bus's passage schedule in particular on a particular Line at a particular stop.
 
-##Edwig gère des StopVisits pour chaque Referential
+##Edwig manage the StopVisit for each Referential.
 
-Un StopVisit est constitué de:
+A StopVisit is composed by: 
 
-* un uuid (défini par Edwig)
-* des ObjectIDs
-* un CollectedAt
-* un StopAreaId
-* un VehicleJourneyId
-* un ArrivalStatus
-* un DepartureStatus
-* un RecordedAt
-* un VehicleAtStop
-* un PassageOrder
-* des Schedules
-* des Attributes
-* des References
-* des horaires (Aimed, Expected, Actual)
+* A uuid (defined by Edwig)
+* ObjectIDs
+* A CollectedAt
+* A StopAreaId
+* A VehicleJourneyId
+* An ArrivalStatus
+* A DepartureStatus
+* A RecordedAt
+* A VehicleAtStop
+* A PassageOrder
+* Schedules
+* Attributes
+* References
+* Horaires (Aimed, Expected, Actual)
 
-##Consulter les StopVisits disponibles
+##Consult Available StopVisits 
 
-**Consulter un StopVisit:**  
+**Consult one StopVisit:**
 
->Consulter un StopVisit:
+>For one available StopVisit:
 
 ```shell
   curl -d @- "<URL>"
@@ -905,10 +901,9 @@ Un StopVisit est constitué de:
 
 GET /:referential_slug/stop_visits/:uuid
 
+**Consult all the available StopVisit:**
 
-**Consulter l‘ensemble des StopVisits:**
-
->Consulter l'ensemble des StopVisits:
+>For all the Availble StopVisit:
 
 ```shell
   curl -d @- "<URL>"
@@ -1001,9 +996,9 @@ GET /:referential_slug/stop_visits/:uuid
 
 GET /:referential_slug/stop_visits/
 
-##supprimer un StopVisit dans un Referential
+##Delete a StopVisit in a Referential
 
-**Suppression d’un StopVisit: **
+**Delete a StopVisit*
 
 DELETE /_referentials/:uuid
 
@@ -1016,12 +1011,12 @@ DELETE /_referentials/:uuid
 
 
 
-#6. VehiculeJourney
+# 6. VehicleJourney
 
-Un VehiculeJourney (course) définit les horaires de passage aux différents points d’arrêt de la mission.
+A VehicleJourney defines the passage schedules to the different stop points of the JourneyPattern.
 
-Exemple : Ligne de Bus 1a Paimpont - Rennes, société Illenoo
-La course définit un passage à 6h25 avenue de la Libération à Plélan, à 6h26 à La Pointe à Plélan et ainsi de suite.
+Example: "La Paimpont" Line - Rennes - Illenoo corporation.
+The VehiculeJourney is defined by a passge at 6h25am "Avenue de la Libération" at Plélan, at 6h26am at "La Pointe" at "Plélan" and so on.
 
 <style type="text/css">
   th, td {
@@ -1031,19 +1026,19 @@ La course définit un passage à 6h25 avenue de la Libération à Plélan, à 6h
 
 <table>
   <tr>
-    <th colspan="2"><center>Jours de circulation<br><br></center></th>
-    <th><center>Lundi<br>à<br>Vendredi</center></th>
+    <th colspan="2"><center>Circulation days<br><br></center></th>
+    <th><center>Monday<br>to<br>Friday</center></th>
   </tr>
   <tr>
-    <th colspan="2">Période scolaire</th>
+    <th colspan="2">School period</th>
     <th style="background-color: green"><center>*</center></th>
   </tr>
   <tr>
-    <th colspan="2">Période de vacances scolaires (zone B)</th>
+    <th colspan="2">school holydays period (B zone)</th>
     <th style="background-color: cyan"><center>*</center></th>
   </tr>
   <tr>
-    <th colspan="2">AFFICHAGE SUR L'AUTOCAR</th>
+    <th colspan="2">BUS DISPLAY</th>
     <th><center>Rennes<br>1a02</center></th>
   </tr>
 
@@ -1157,22 +1152,21 @@ La course définit un passage à 6h25 avenue de la Libération à Plélan, à 6h
   </tr>
 </table>
 
-##Edwig gère des VehicleJourney pour chaque Referential
+##Edwig manages the VehicleJourney for each Referential
 
-Un VehicleJourney est constitué de :
+A VehicleJourney is composed by:
 
-* uuid (défini par Edwig)
-* des ObjectIDs
-* un LineId
-* des Attributes
-* des References
+* A uuid (defined by Edwig)
+* ObjectIDs
+* A LineId
+* Attributes
+* References
 
-##Consulter les VehiculeJourneys disponibles
+##Consult Available VehicleJourneys
 
+**Consult one available VehicleJourney:**
 
-**Consulter un VehicleJourney:**
-
->Consulter un VehicleJourney:
+>For one VehicleJourney:
 
 ```shell
   curl -d @- "<URL>"
@@ -1219,9 +1213,9 @@ Un VehicleJourney est constitué de :
 
 GET /:referential_slug/vehicle_journeys/:uuid
 
-**Consulter l’ensemble des VehicleJourneys:** 
+**Consult all the avalaible VehicleJourney:**
 
->Consulter l'ensemble des VehicleJourneys:
+>For all the VehicleJourney:
 
 ```shell
   curl -d @- "<URL>"
@@ -1306,11 +1300,11 @@ GET /:referential_slug/vehicle_journeys/:uuid
 
 GET /:referential_slug/vehicle_journeys/
 
-##Supprimer un VehicleJourney dans un Referential
+##Delete a VehicleJourney in a Referential
 
-Je dois indiquer **l'identifiant du VehicleJourney (dans l'URL)**
+We have to indicate the **VehicleJourney ID (in the URL)**.
 
-**Suppression d’un VehicleJourney:**
+**Delete a VehicleJourney:**
 
 DELETE /:referential_slug/vehicle_journeys/:uuid
 
@@ -1323,92 +1317,94 @@ DELETE /:referential_slug/vehicle_journeys/:uuid
 
 
 
-#7. Gestion du Modèle
+# 7. Model management
 
-##Edwig charge les Referentials définis en base de données lors de son lancement
+##Edwig manages the Partners defined in the database when we load a Referential
 
-Au démarrage, Edwig créé les Referentials définis dans sa base de donnée. 
+At the beginning, Edwig creates the Referentials defined in the database.
 
-Pour chaque Referential, sont lus: 
+For each Referential, are read:
 
-* son uuid
-* son slug
+* Its uuid
+* Its slug
 
-##Edwig charge les Partners définis en base de données quand on charge un Referential
+##Edwig loads the Partners defined in the database when we load the Referential
 
-Au démarrage, Edwig créé les Partners définis dans sa base de donnée (et ce, pour chaque Referential défini en base):
+At the beginning, Edwig creates the Partners defined in the database (this, for each Referntial defined in the database)
 
-Pour chaque Partner, sont lus:
+For each Partner, are read:
 
-* son uuid
-* son slug
-* sa liste des types de connecteur souhaités
-* sa liste de paramètres
+* Its uuid
+* Its slug
+* Its Wanted connector's kind list
+* Its parameters list
 
-##Edwig vérifie régulièrement l’état opérationnel des Partners
+##Edwig regularily verify the operational state of the Partners
 
-Le status du Partner est vérifié périodiquement (si un Connector est disponible). Cet intervalle de temps est de 30 secondes. Un operationnalStatus peut être: unknown, up ou down.
+The Partner's status is periodically verified (if a Connector is availble). This time lap is about 30 secondes. An operationnalStatus can be: unknown, up or down.
 
-**unknown**
+**Unknown**
 
-Un Partner a son operationnalStatus à unknown par défaut.
-L’operationnalStatus est à unknown tant qu’aucun Connector n'a permis de connaître l’état du Partner.
+A Partner have its operationnalStatus set to "unknown" by default.
+The operationnalStatus is "unknown" as long as no Connector allows us to know the Partner's state.
 
-**up**
+**Up**
 
-L’operationnalStatus est à up dès qu’un Connector confirme la disponibilité du Partner.
+The operationnalStatus is "up" since a Connector confirms the Partner's disponibility.
 
-**down**
+**Down**
 
-L’operationnalStatus est à down si un Connector retourne un état négatif.
+The operationnalStatus is "down" if a Connector returns a negative state.
 
-##Edwig s’inquiète régulièrement l’état de chaque StopArea
+##Edwig regularily worries about the Partner's operationnal state
 
-Chaque StopArea du modèle doit être maintenu à jour. 
+Each model's StopArea has to be up to date.
 
-Lors qu’un StopArea respecte ces critères:
+When a StopArea respects those requirements:
 
-* il n’a pas été mis à jour depuis 1 minute
-* il n’a pas déclenché de demande depuis 1 minute
+* It hasn't been updated since 1 minutes
+* It hasn't initiated any requests since 1 minutes
 
-Une demande de mise à jour de ce StopArea est formulée auprès du gestionnaire de collecte.
+An update request of this StopArea is made to the collecte manager.
 
-Note : d’autres critères à venir avec d’autres fonctionnalités (monitored_always / monitored_until, etc)
+Note: other requirements are to come with other fonctionalities (monitored_always / monitored_until, etc...).
 
-##Edwig met à jour son modèle avec les évènements de mise à jour de StopVisit reçus du gestionnaire de collecte
+##Edwig update its model with the StopVisit's update events received by the collect manager.
 
-Un évènement de mise à jour de StopVisit intègre:
-* l’ObjectID du StopVisit
-* le DepartureStatus et le ArrivalStatuts
-* les différents horaires
-* les informations complètes du message d’origine (StopVisitUpdateAttributes)
+A StopVisit's update events includes:
 
-Si un StopVisit correspond à l’ObjectID de l’évènement, il est mis à jour avec les informations de l’évènement.
+* The StopVisit's ObjectId
+* The DepartureStatus and the ArrivalStatus
+* The different times
+* The original message's complete informations
 
-Sinon le StopVisit, si nécessaire son StopArea, sa Line et son VehicleJourney sont créés à partir des informations complètes du message d’origine.
+If a StopVisit correspond to an events's ObjectID, it is updated with the event's informations.
 
-
-
+Else, the StopVisit, the StopArea if necessary, its Line and its VehicleJourney are created from the original message's conplete informations.
 
 
 
 
 
 
-#8. SIRI
 
-Le Service Interface for Real Time Information (SIRI) est un protocole d’échange de données Temps Réel sur les réseaux de transports en commun entre systèmes (et non la communication avec l'usager final ou le périphérique de restitution (afficheur), sous un format XML. 
 
-##Le Connecteur de StopMonitoringRequestCollector permet de consulter les StopVisits d’un Partner
 
-Le Connecteur reçoit des demandes de mises à jour de StopAreas. Il les transforme en requête SIRI StopMonitoringRequest avec ces critères:
 
-* MonitoringRef: l’ObjectID du StopArea (du type configuré pour ce Connector)
+# 8. SIRI
+
+The "Service Interface for Real time Information" (SIRI) is a realtime data trading protocole on the  public transport network between the systems (not the communication with the final use or the restitution periphérique), in an XML format.
+
+##The StopMonitoringRequestCollector Connector allows us to consultate the StopVisits of a Partner.
+
+The Connector receives the StopArea's update requests. It transforms them into SIRI StopMonitoringRequest request with these requirements:
+
+* MonitoringRef: The StopArea's ObjectID
 * StopVisitTypes: all
 
-La réponse est décomposée ainsi: chaque MonitoredStopVisit permet de créer un événement de mise à jour de StopVisit. Chaque évènement est transmis au gestionnaire de collecte.
+The response is decomposed like this: Each MonitoringStopVisit allows us to create a StopVisit's update event. Each events is transmited to the collect manager.
 
-Les informations complètes du message d’origine (StopVisitUpdateAttributes) sont accessibles:
+The original messages's complete informations (StopVisitUpdateAttributes) are available:
 
 * StopVisitAttributes#ObjectId : ItemIdentifier
 * StopVisitAttributes#StopAreaObjectId : StopPointRef
@@ -1417,41 +1413,42 @@ Les informations complètes du message d’origine (StopVisitUpdateAttributes) s
 * StopVisitAttributes#PassageOrder : Order
 * StopVisitAttributes#DepartureStatus : DepartureStatus
 * StopVisitAttributes#ArrivalStatus : ArrivalStatus
-* StopVisitAttributes#Schedules : DepartureTime et ArrivalTime pour Aimed, Expected, et Actual
+* StopVisitAttributes#Schedules : DepartureTime and ArrivalTime for Aimed, Expected, and Actual
 * StopVisitAttributes#LineName : PublishedLineName
 * StopVisitAttributes#StopPointName : StopPointName
 
-##Envoyer une requête SIRI 
-Chaque référentiel dispose d’un point d’entrée permettant de traiter des requêtes SIRI.
+##Send a SIRI request
+
+Each Referential owns an entry point allowing us to process the SIRI requests.
 
 POST /:referential_slug/siri
 
-La requête est analysée :
-en fonction du RequestorRef SIRI, le Partner correspondant est sélectionné. 
-en fonction de la méthode SOAP sollicitée, la requête SIRI est transmise au Connector correspondant
+The request is analysed:
 
-La réponse SOAP est générée à partir de la réponse SIRI du Connector.
+* According to the SIRI RequestoRef, the corresponding Partner is selected
+* According to requested SOAP method, The SIRI request is transmited to the corresponding Connector
 
-Exemple d’associations SOAP / Connector:
+The SOAP response is generated from the Connectors's SIRI response.
+
+SOAP/Connector associations Example: 
 
 * CheckStatus SOAP : SIRICheckStatusRequestServer
 * GetStopMonitoring SOAP : SIRIStopMonitoringRequestBroadcaster
 
-##Envoyer une requête SIRI CheckStatus
+##Send a CheckStatus SIRI request
 
-La réponse doit être conforme à la norme SIRI.
-Le ServiceStartedTime retourné correspond à l’heure de mise en service du Referential.
+The response have to comply with the SIRI standards.
+The returned ServiceStartedTime correspond to the Refential's launch time.
 
-##Envoyer une requête SIRI StopMonitoring
+##Send a StopMonitoring SIRI request
 
-Dans la requête StopMonitoring, les identifiants sont interprétés selon le remote_objectid_kind configuré pour le Connector StopMonitoringRequestBroadcaster.
+In the StopMonitoring request, IDs are interpreted according to the remote_objectid_kind configured for the StopMonitoringRequestBroadcaster Connector.
 
-Si le remote_objectid_kind est “reflex”, et MonitoringRef est “FR:77491:ZDE:34004:STIF”, l’arrêt associé à la requête devra avoir l’objectid “reflex”:”FR:77491:ZDE:34004:STIF”.
+If the remote_objectid_kinf is "reflex", and MonitoringRef is "FR:77491:ZDE:34004:STIF", The stop associated to the request will have to have the ObjectID "reflex":"FR:77491:ZDE:34004:STIF".
 
-La réponse à la requête doit être conforme à la norme SIRI et au profil SIRI IDF 2.4
+The response to the request have to comply with the SIRI stardard and the SIRI IDF 2.4 profil.
 
-Le contenu des MonitoredStopVisits de la réponse est rempli en utilisant les attributs du Model de la manière suivante:
-
+The request's MonitoredStopVisits content is filled by using the Model's attributs like this:
 
 <table>
   <tr>
@@ -1684,39 +1681,31 @@ Le contenu des MonitoredStopVisits de la réponse est rempli en utilisant les at
   </tr>
 </table>
 
-##Envoyer une requête SIRI GetSiriService
+##Send a SIRI GetSiriService request
 
-Les différentes composantes de la requête GetSiriService sont adressées aux connectors dédiés de ce type de message.
+The different elements of the GetSiriService request are addressed to the connectors dedicated to this kind of message.
 
-Exemple d’association:
+Association example:
 
 * StopMonitoringRequest: SIRIStopMonitoringRequestBroadcaster
 
-Les réponses collectées auprès de chaque Connector sont agrégées pour former la réponse.
+The responses collected from each Connector are associated to form the response.
 
+##Set a Connetor to make it able to use a specific remote_objectid_kind
 
+This setting is possible thanks to a setting dedicated to each Connector. It is used in priority at the Partner's remote_objectid_kind setting.
 
+Setting Example:
 
+* siri_stopmonitoring_request_broadcast_remote_objectid_kind specific for SIRIStopMonitoringRequestBroadcaster
 
+##Send a SIRI StopDiscovery request to obtain the stops list
 
+The StopDiscovery response use the IDs corresponding to the remote_objectid_kinf set for the SIRISTopPointDiscoveryRequestBroadcaster Connector. The stops which haven't this king of ObjectID are naturally filtered.
 
+The response have to comply with the SIRI standard and the SIRI IDF 2.4 Profil.
 
-
-##Paramétrer un Connecteur pour qu’il utilise un remote_objectid_kind spécifique
-
-Ce paramétrage est rendu possible pour un setting dédié à chaque Connecteur. Il est utilisé en priorité au setting remote_objectid_kind du Partner.
-
-Exemple de setting :
-
-* siri_stopmonitoring_request_broadcast_remote_objectid_kind spécifique pour SIRIStopMonitoringRequestBroadcaster
-
-##Envoyer une requête SIRI StopDiscovery pour obtenir la liste des arrêts
-
-La réponse au StopDiscovery utilise les identifiants correspondant au remote_objectid_kind configuré pour le Connector SIRIStopPointDiscoveryRequestBroadcaster. Les arrêts ne disposant pas d’un objectid de ce type sont naturellement filtrés.
-
-La réponse doit être conforme à la norme SIRI et au profil SIRI IDF 2.4.
-
-Le contenu des AnnotatedStopPointRef de la réponse est rempli en utilisant les attributs du Model de la manière suivante :
+The resonse's AnnotatedStopPointRef content is filled using the Model's attributs like this:
 
 <table>
   <tr>
@@ -1729,58 +1718,56 @@ Le contenu des AnnotatedStopPointRef de la réponse est rempli en utilisant les 
   </tr>
 </table>
 
+##Configure a Partner to manage, in collect, a given list of stops
 
-##Configurer un Partner pour ne gérer en collecte qu’une liste donnée d’arrêts
+In a Partner, we can define a setting collect_include_stopareas containing a serie of IDs separated by a comma.
 
-Dans un Partner, on peut définir un settings collect_include_stopareas contenant une suite d’identifiants sparés par un virgule.
+Example : collect_include_stopareas = “boaarle,trahote”
 
-Exemple : collect_include_stopareas = “boaarle,trahote”
+This serie of IDs is associated with the remote_objectid_kind from the same Partner.
 
-Cette liste d’identifiants est associée au remote_objectid_kind du même Partner. 
+This serie is considered by the CollectManager to select(or not) the Partner. If the setting is missing, the Partner can be used to supply any StopArea.
 
-Cette liste est pris en compte par le CollectManager pour sélectionner (ou non) le Partner. En l’absence du setting, le Partner peut être utilisé pour alimenter n’importe quel StopArea.
+## Configurate a Partner to choose its priority in the collect.
 
-##Configurer un Partner pour choisir sa priorité dans la collecte
+In a Partner, we can define a collect.priority setting containing an integer (upper or equal to 0).
 
-Dans un Partner, on peut définir un setting collect.priority contenant un entier (supérieur ou égal à 0).
+Example: collect.priority = “1”
 
-Exemple : collect.priority = “1”
+This priority is considered by the CollectManager to select the Partner. A Partner with a lesser priority is used in priority. If the setting is missing, the Partner have the less state of priority (0).
 
-Cette priorité est prise en compte par le CollectManager pour sélectionner le Partner. Un Partner avec un priorité plus basse est utilisé en priorité. En l’absence du setting, le Partner a la priorité la plus basse (0).
+##Set a stop to be temporarily monitored.
 
+The StopArea#CollectedAlways and StopArea#CollectedUntil's attributs allows us to control the temporary(or not) collect of a stop.
 
-##Paramétrer un arrêt pour qu’il soit monitoré temporairement
+A stop with a True StopArea#CollectedAlways will always be considered by the collect mechanism.
 
-Les attributs StopArea#CollectedAlways et StopArea#CollectedUntil permettent de contrôler la collecte temporaire ou non d’un arrêt.
+A stop with a False StopArea#CollectedAlways will only be considered by the collect mechanism if CollectedUntil is defined.
 
-Un arrêt avec StopArea#CollectedAlways à vrai sera toujours pris en compte par le mécanisme de collecte.
+When StopMonitoring Request is received on a stop, its CollectedUntil Attribute is repositioned in the futur (+15 minutes). The collect is inssured during this period.
 
-Un arrêt avec StopArea#CollectedAlways à faux ne sera pris en compte par le mécanisme de collecte que si CollectedUntil est défini et dans le futur.
+It signify that a default unmonitored stop will be temporary monitored until its informations are no longer consulted by StopMonitoring requests.
 
-Lorsqu’une requête de StopMonitoring est reçue sur un arrêt, son attribut CollectedUntil est repositionné dans le futur (+15 minutes). La collecte est assurée pendant toute cette période.
+Example:
 
-Ce qui signifie qu’un arrêt non monitoré par défaut, le sera temporairement tant que ses informations sont consultées via des requêtes de StopMonitorings.
+"RATP Dev" stop:
 
-Exemples :
+* ObjectID hastus and stif
+* CollectedAlways: true
+* CollectedUntil: undefined
 
-Arrêt “RATP Dev”: 
-
-* ObjectIDs hastus et stif
-* CollectedAlways: true 
-* CollectedUntil: non défini
-
-Arrêt “STIF”:
+"STIF" stop:
 
 * ObjectIDs stif
-* CollectedAlways: false 
-* CollectedUntil non défini initialement. 
+* CollectedAlways: false
+* CollectedUntil: Undefined by default
 
-Quand on reçoit une requête de StopMonitoring, CollectedUntil  passe à +15 minutes.
+When we receive a StopMonitoring request, CollectedUntil go to +15 minutes
 
-##Recharger automatiquement le Model d'un Referential à l'heure prévue
+##Automatically reload tht Model of a Referential at a determined time
 
-A l'heure configurée (04:00 par défaut), un Referential doit lancer la procédure de rechargement de son Model. Le Model change de date de référence et prend la date du jour.
+At the configured time (04:00 by default), a Referential have to launch its Model's reloading process. The Model change the referential date and take the today's date.
 
-Le setting "model.reload_at" du Referential permet de modifier cette heure (par exemple "03:15").
+The Referential's "model.reload_at" setting allows us to modify this time (by example: "03:15").
 
-Pour l'instant, en l'absence de donnée en base, le rechargement d'un Model consiste à effacer tous les StopVisits, les Lines et les VehicleJourneys.
+For now, because of the missing database, the reloading of a Model deletes all the StopVistis, the Lines and the VehicleJourneys.
