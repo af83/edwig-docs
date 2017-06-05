@@ -72,5 +72,5 @@ end
 activate :deploy do |deploy|
   deploy.deploy_method   = :sftp
   deploy.host            = deploy_host
-  deploy.path            = '/var/www/edwig-docs'
+  deploy.path            = '/var/www/docs.edwig/current'
 end
