@@ -1,3 +1,13 @@
+GIT
+  remote: https://github.com/middleman-contrib/middleman-deploy.git
+  revision: 243ab38b08896cd5a37d6845a01a5761b934a898
+  branch: master
+  specs:
+    middleman-deploy (2.0.0.pre.alpha)
+      middleman-core (>= 3.2)
+      net-sftp
+      ptools
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -33,6 +43,7 @@ GEM
     hashie (3.5.1)
     i18n (0.7.0)
     kramdown (1.13.2)
+    libv8 (3.16.14.19)
     listen (3.0.8)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -80,6 +91,9 @@ GEM
       middleman-core (>= 3.2)
       rouge (~> 2.0)
     minitest (5.10.1)
+    net-sftp (2.1.2)
+      net-ssh (>= 2.6.5)
+    net-ssh (4.1.0)
     padrino-helpers (0.13.3.3)
       i18n (~> 0.6, >= 0.6.7)
       padrino-support (= 0.13.3.3)
@@ -87,18 +101,24 @@ GEM
     padrino-support (0.13.3.3)
       activesupport (>= 3.1)
     parallel (1.10.0)
+    ptools (1.3.3)
     public_suffix (2.0.5)
     rack (2.0.1)
+    rake (12.0.0)
     rb-fsevent (0.9.8)
     rb-inotify (0.9.8)
       ffi (>= 0.5.0)
     redcarpet (3.4.0)
+    ref (2.0.0)
     rouge (2.0.7)
     sass (3.4.23)
     servolux (0.12.0)
     sprockets (3.7.1)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
+    therubyracer (0.12.3)
+      libv8 (~> 3.16.14.15)
+      ref
     thor (0.19.4)
     thread_safe (0.3.5)
     tilt (2.0.6)
@@ -113,10 +133,13 @@ PLATFORMS
 DEPENDENCIES
   middleman (~> 4.2.1)
   middleman-autoprefixer (~> 2.7.0)
+  middleman-deploy!
   middleman-sprockets (~> 4.1.0)
   middleman-syntax (~> 3.0.0)
+  rake
   redcarpet (~> 3.4.0)
   rouge (~> 2.0.5)
+  therubyracer
 
 BUNDLED WITH
    1.14.3

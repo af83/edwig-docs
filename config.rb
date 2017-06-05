@@ -47,3 +47,30 @@ end
 # Deploy Configuration
 # If you want Middleman to listen on a different port, you can set that below
 set :port, 4567
+
+def git_branch
+  @git_branch ||=
+    if ENV['GIT_BRANCH'] =~ %r{/(.*)$}
+      $1
+    else
+      `git rev-parse --abbrev-ref HEAD`.strip
+    end
+end
+
+def deploy_env
+  if [nil, "master"].include? git_branch
+    "dev"
+  else
+    git_branch
+  end
+end
+
+def deploy_host
+  ENV['DEPLOY_HOST'] || "edwig-#{deploy_env}.af83.priv"
+end
+
+activate :deploy do |deploy|
+  deploy.deploy_method   = :sftp
+  deploy.host            = deploy_host
+  deploy.path            = '/var/www/edwig-docs'
+end
